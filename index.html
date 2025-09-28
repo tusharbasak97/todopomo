@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="logo.png" type="image/png" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+    <title>Todo List</title>
+  </head>
+  <body>
+    <div class="content-container">
+      <div class="checkbox-wrapper-54">
+        <label class="switch">
+          <input type="checkbox" id="dark-mode-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <button id="settings-button">
+        <img src="settings.svg" alt="Settings" />
+      </button>
+      <!-- Reset Button with Wave Animation -->
+      <div class="reset-container">
+        <input type="checkbox" id="trigger" hidden />
+        <label for="trigger" class="trigger"></label>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+      <div class="todo-list-container">
+        <h2 class="title">Todo App</h2>
+        <div class="add-todo-container">
+          <input type="text" id="new-todo" placeholder="Add a new task" />
+          <button id="add-button">Add</button>
+        </div>
+        <h3>Todo List</h3>
+        <ul id="todo-list"></ul>
+        <div id="settings-panel" style="display: none">
+          <h3>Pomodoro Settings</h3>
+          <div class="settings-group">
+            <label>Pomodoro Duration:</label>
+            <div class="duration-inputs">
+              <input
+                type="number"
+                id="pomodoro-min"
+                min="0"
+                placeholder="Min"
+              />
+            </div>
+          </div>
+          <div class="settings-group">
+            <label>Short Break Duration:</label>
+            <div class="duration-inputs">
+              <input
+                type="number"
+                id="short-break-min"
+                min="0"
+                placeholder="Min"
+              />
+            </div>
+          </div>
+          <div class="settings-group">
+            <label>Long Break Duration:</label>
+            <div class="duration-inputs">
+              <input
+                type="number"
+                id="long-break-min"
+                min="0"
+                placeholder="Min"
+              />
+            </div>
+          </div>
+          <div class="settings-group">
+            <label for="sessions-before-long-break"
+              >Sessions Before Long Break:</label
+            >
+            <input type="number" id="sessions-before-long-break" min="1" />
+          </div>
+          <div class="settings-buttons">
+            <button id="save-settings">Save</button>
+            <button id="back-to-todo">Back</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      © <span id="currentYear"></span> | Designed by
+      <a href="https://bit.ly/m/DataBasak" target="_blank" class="designer-link"
+        >Tushar Basak</a
+      >
+    </div>
+    <div id="timer-overlay">
+      <div id="timer-task-title"></div>
+      <div id="timer-display" contenteditable="false"></div>
+      <div class="timer-controls">
+        <div class="icon pause-icon timer-control-icon">
+          <img src="pause.svg" alt="Pause" />
+        </div>
+        <div class="icon edit-timer-icon timer-control-icon">
+          <img src="edit.svg" alt="Edit Timer" />
+        </div>
+        <div class="icon stop-icon timer-control-icon">
+          <img src="stop.svg" alt="Stop" />
+        </div>
+      </div>
+    </div>
+    <style>
+      .timer-control-icon {
+        width: 50px;
+        height: 50px;
+      }
+
+      /* Settings Panel */
+      #settings-button {
+        background: var(--bg-color);
+        border: none;
+        color: var(--text-color);
+        padding: 10px 15px;
+        border-radius: var(--radius-medium);
+        cursor: pointer;
+        box-shadow: 3px 3px 6px var(--shadow-dark),
+          -3px -3px 6px var(--shadow-light);
+        transition: box-shadow 0.2s ease-in-out;
+        margin-left: 10px;
+      }
+
+      #settings-button:hover {
+        box-shadow: 2px 2px 4px var(--shadow-dark),
+          -2px -2px 4px var(--shadow-light);
+      }
+
+      #settings-panel {
+        text-align: center;
+      }
+
+      #settings-panel h3 {
+        margin-bottom: 20px;
+        color: var(--text-color);
+      }
+
+      .settings-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .settings-group label {
+        margin-bottom: 5px;
+        color: var(--text-color);
+      }
+
+      .settings-group input {
+        padding: 10px;
+        border-radius: var(--radius-medium);
+        border: none;
+        background: var(--bg-color);
+        color: var(--text-color);
+        box-shadow: inset 3px 3px 6px var(--shadow-dark),
+          inset -3px -3px 6px var(--shadow-light);
+        width: 200px;
+        text-align: center;
+      }
+
+      .duration-inputs {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+      }
+
+      .settings-buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .settings-buttons button {
+        padding: 15px 25px;
+        border: none;
+        background: var(--bg-color);
+        color: var(--text-color);
+        border-radius: var(--radius-medium);
+        cursor: pointer;
+        font-weight: 600;
+        box-shadow: 3px 3px 6px var(--shadow-dark),
+          -3px -3px 6px var(--shadow-light),
+          inset -3px -3px 3px var(--shadow-dark),
+          inset 3px 3px 3px var(--shadow-light);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .settings-buttons button:focus {
+        outline: 2px solid var(--text-color);
+        outline-offset: 2px;
+      }
+
+      .settings-buttons button:hover {
+        box-shadow: 2px 2px 4px var(--shadow-dark),
+          -2px -2px 4px var(--shadow-light);
+      }
+    </style>
+  </body>
+</html>
