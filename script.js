@@ -659,9 +659,9 @@ saveSettingsButton.addEventListener("click", () => {
 });
 
 const mockTodos = [
-  { text: "InlighnX", completed: false },
-  { text: "TuteDude", completed: false },
-  { text: "Udemy", completed: false },
+  { text: "Task 1", completed: false },
+  { text: "Task 2", completed: false },
+  { text: "Task 3", completed: false },
 ];
 
 // Load saved todos or use mock data if none exist
