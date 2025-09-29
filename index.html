@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="logo.png" type="image/png" />
-    <link rel="stylesheet" href="style.css" />
-    <script src="script.js" defer></script>
+    <link rel="icon" href="assets/images/logo.png" type="image/png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/script.js" defer></script>
     <title>TodoPomo | Tushar Basak</title>
   </head>
   <body>
@@ -17,7 +17,7 @@
         </label>
       </div>
       <button id="settings-button">
-        <img src="settings.svg" alt="Settings" />
+        <img src="assets/svg/settings.svg" alt="Settings" />
       </button>
       <!-- Reset Button with Wave Animation -->
       <div class="reset-container">
@@ -96,16 +96,23 @@
       <div id="timer-display" contenteditable="false"></div>
       <div class="timer-controls">
         <div class="icon pause-icon timer-control-icon">
-          <img src="pause.svg" alt="Pause" />
+          <img src="assets/svg/pause.svg" alt="Pause" />
         </div>
         <div class="icon edit-timer-icon timer-control-icon">
-          <img src="edit.svg" alt="Edit Timer" />
+          <img src="assets/svg/edit.svg" alt="Edit Timer" />
         </div>
         <div class="icon stop-icon timer-control-icon">
-          <img src="stop.svg" alt="Stop" />
+          <img src="assets/svg/stop.svg" alt="Stop" />
         </div>
       </div>
     </div>
+
+    <!-- Hidden audio element for background music -->
+    <audio id="background-music" loop preload="auto" style="display: none">
+      <source src="assets/audio/focus.mp3" type="audio/mp3" />
+      Your browser does not support the audio element.
+    </audio>
+
     <style>
       .timer-control-icon {
         width: 50px;
