@@ -315,11 +315,11 @@ function animateTimeChange(newTimeText) {
     if (currentDigits[index] !== newDigits[index]) {
       const currentDigit = parseInt(currentDigits[index]);
       const newDigit = parseInt(newDigits[index]);
-      
+
       // Determine animation direction based on digit change
       // Rollover from 0 to 9 gets opposite (downward) animation
       const isRollover = currentDigit === 0 && newDigit === 9;
-      
+
       if (isRollover) {
         // Downward animation for rollover (0→9)
         gsap.to(span, {
@@ -657,14 +657,40 @@ function toggleTimerEdit() {
       timerDisplay.style.animation = "errorShake 0.5s ease-in-out";
 
       setTimeout(() => {
-        // Restore digits
-        timerDisplay.textContent = "";
-        digitSpans.forEach((span) => (span.style.display = ""));
+        // Restore the original timer display HTML structure
+        timerDisplay.innerHTML = `
+          <span class="timer-digit" data-position="0">0</span>
+          <span class="timer-digit" data-position="1">0</span>
+          <span class="timer-separator">:</span>
+          <span class="timer-digit" data-position="2">0</span>
+          <span class="timer-digit" data-position="3">0</span>
+          <span class="timer-separator">:</span>
+          <span class="timer-digit" data-position="4">0</span>
+          <span class="timer-digit" data-position="5">0</span>
+        `;
+
+        // Get current time and display it
+        const hours = Math.floor(remainingTime / 3600);
+        const minutes = Math.floor((remainingTime % 3600) / 60);
+        const seconds = remainingTime % 60;
+        const currentTimeText = `${String(hours).padStart(2, "0")}:${String(
+          minutes
+        ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        setTimerDigits(currentTimeText);
+
         timerDisplay.style.color = "";
         timerDisplay.style.fontSize = "";
         timerDisplay.style.fontWeight = "";
         timerDisplay.style.textShadow = "";
         timerDisplay.style.animation = "";
+
+        // Hide digit spans and show editable text again for continued editing
+        const newDigitSpans = timerDisplay.querySelectorAll(
+          ".timer-digit, .timer-separator"
+        );
+        newDigitSpans.forEach((span) => (span.style.display = "none"));
+
+        timerDisplay.textContent = currentTimeText;
         timerDisplay.focus();
 
         // Re-select text for continued editing
@@ -680,11 +706,24 @@ function toggleTimerEdit() {
     // Convert to total seconds
     remainingTime = hours * 3600 + minutes * 60 + seconds;
 
-    // Update display with proper formatting
+    // Restore the original timer display HTML structure
+    timerDisplay.contentEditable = "false";
+    timerDisplay.innerHTML = `
+      <span class="timer-digit" data-position="0">0</span>
+      <span class="timer-digit" data-position="1">0</span>
+      <span class="timer-separator">:</span>
+      <span class="timer-digit" data-position="2">0</span>
+      <span class="timer-digit" data-position="3">0</span>
+      <span class="timer-separator">:</span>
+      <span class="timer-digit" data-position="4">0</span>
+      <span class="timer-digit" data-position="5">0</span>
+    `;
+
+    // Update display with proper formatting using setTimerDigits for immediate display
     const formattedTime = `${String(hours).padStart(2, "0")}:${String(
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    animateTimeChange(formattedTime);
+    setTimerDigits(formattedTime);
 
     // Re-enable controls
     pauseResumeIcon.style.pointerEvents = "";
@@ -692,14 +731,7 @@ function toggleTimerEdit() {
     stopIcon.style.pointerEvents = "";
     stopIcon.style.opacity = "";
 
-    timerDisplay.contentEditable = "false";
     editTimerIcon.querySelector("img").src = "assets/svg/edit.svg";
-
-    // Restore digit spans display
-    const digitSpans = timerDisplay.querySelectorAll(
-      ".timer-digit, .timer-separator"
-    );
-    digitSpans.forEach((span) => (span.style.display = ""));
 
     // Auto-start the timer
     if (remainingTime > 0) {
@@ -802,10 +834,57 @@ timerDisplay.addEventListener("input", (e) => {
   }
 });
 
+// Sound toggle functionality
+const soundToggleIcon = document.querySelector(".sound-toggle-icon");
+
+function toggleSound() {
+  isMusicEnabled = !isMusicEnabled;
+  const img = soundToggleIcon.querySelector("img");
+
+  // Add switching class for animation
+  soundToggleIcon.classList.add("switching");
+
+  setTimeout(() => {
+    if (isMusicEnabled) {
+      img.src = "assets/svg/sound.svg";
+      img.alt = "Mute Sound";
+      // Resume music if timer is running and not paused
+      if (timerInterval && !isPaused) {
+        playBackgroundMusic();
+      }
+    } else {
+      img.src = "assets/svg/mute.svg";
+      img.alt = "Unmute Sound";
+      pauseBackgroundMusic();
+    }
+
+    // Remove switching class to animate back in
+    soundToggleIcon.classList.remove("switching");
+  }, 150); // Half of the transition duration
+
+  // Save sound preference
+  localStorage.setItem("isMusicEnabled", isMusicEnabled);
+}
+
+// Load sound preference
+const savedMusicEnabled = localStorage.getItem("isMusicEnabled");
+if (savedMusicEnabled !== null) {
+  isMusicEnabled = savedMusicEnabled === "true";
+  const img = soundToggleIcon.querySelector("img");
+  if (isMusicEnabled) {
+    img.src = "assets/svg/sound.svg";
+    img.alt = "Mute Sound";
+  } else {
+    img.src = "assets/svg/mute.svg";
+    img.alt = "Unmute Sound";
+  }
+}
+
 // Event listeners for timer controls
 editTimerIcon.addEventListener("click", toggleTimerEdit);
 pauseResumeIcon.addEventListener("click", togglePauseResume);
 stopIcon.addEventListener("click", stopTimer);
+soundToggleIcon.addEventListener("click", toggleSound);
 
 addButton.addEventListener("click", handleAddButtonClick);
 newTodoInput.addEventListener("keydown", (e) => {
@@ -831,6 +910,14 @@ const todoContent = document.querySelector(
 );
 
 settingsButton.addEventListener("click", () => {
+  // Add rotation animation
+  settingsButton.classList.add("rotating");
+
+  // Remove rotation class after animation completes
+  setTimeout(() => {
+    settingsButton.classList.remove("rotating");
+  }, 300);
+
   // Hide todo content
   document.querySelector(".title").style.display = "none";
   document.querySelector(".add-todo-container").style.display = "none";
@@ -846,6 +933,14 @@ settingsButton.addEventListener("click", () => {
 });
 
 backToTodoButton.addEventListener("click", () => {
+  // Add rotation animation to settings button (reverse)
+  settingsButton.classList.add("rotating");
+
+  // Remove rotation class after animation completes
+  setTimeout(() => {
+    settingsButton.classList.remove("rotating");
+  }, 300);
+
   // Show todo content
   document.querySelector(".title").style.display = "block";
   document.querySelector(".add-todo-container").style.display = "flex";
