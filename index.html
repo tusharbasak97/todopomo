@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="assets/images/logo.png" type="image/png" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="js/script.js" defer></script>
     <title>TodoPomo | Tushar Basak</title>
   </head>
@@ -93,7 +94,16 @@
     </div>
     <div id="timer-overlay">
       <div id="timer-task-title"></div>
-      <div id="timer-display" contenteditable="false"></div>
+      <div id="timer-display" contenteditable="false">
+        <span class="timer-digit" data-position="0">0</span>
+        <span class="timer-digit" data-position="1">0</span>
+        <span class="timer-separator">:</span>
+        <span class="timer-digit" data-position="2">0</span>
+        <span class="timer-digit" data-position="3">0</span>
+        <span class="timer-separator">:</span>
+        <span class="timer-digit" data-position="4">0</span>
+        <span class="timer-digit" data-position="5">0</span>
+      </div>
       <div class="timer-controls">
         <div class="icon pause-icon timer-control-icon">
           <img src="assets/svg/pause.svg" alt="Pause" />

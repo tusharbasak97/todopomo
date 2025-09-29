@@ -102,28 +102,74 @@ function addTodo(text, completed = false) {
 
   const todoId = `todo-${Date.now()}-${Math.random()}`;
 
-  li.innerHTML = `
-    <div class="checkbox-wrapper-24">
-      <input type="checkbox" id="${todoId}" name="check" value="" ${
-    completed ? "checked" : ""
-  }/>
-      <label for="${todoId}">
-        <span></span>
-        ${text}
-      </label>
-    </div>
-    <div class="todo-actions">
-        <div class="icon play-icon">
-            <img src="assets/svg/play.svg" alt="Play" />
-        </div>
-        <div class="icon edit-icon">
-            <img src="assets/svg/edit.svg" alt="Edit" />
-        </div>
-        <div class="icon delete-icon">
-            <img src="assets/svg/delete.svg" alt="Delete" />
-        </div>
-    </div>
-  `;
+  // Create checkbox wrapper div
+  const checkboxWrapper = document.createElement("div");
+  checkboxWrapper.className = "checkbox-wrapper-24";
+
+  // Create checkbox input
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.id = todoId;
+  checkbox.name = "check";
+  checkbox.value = "";
+  if (completed) {
+    checkbox.checked = true;
+  }
+
+  // Create label
+  const label = document.createElement("label");
+  label.setAttribute("for", todoId);
+
+  // Create span inside label
+  const span = document.createElement("span");
+
+  // Create text node for the todo text (safe from XSS)
+  const textNode = document.createTextNode(text);
+
+  // Append span and text to label
+  label.appendChild(span);
+  label.appendChild(textNode);
+
+  // Append checkbox and label to wrapper
+  checkboxWrapper.appendChild(checkbox);
+  checkboxWrapper.appendChild(label);
+
+  // Create todo actions div
+  const todoActions = document.createElement("div");
+  todoActions.className = "todo-actions";
+
+  // Create play icon
+  const playIcon = document.createElement("div");
+  playIcon.className = "icon play-icon";
+  const playImg = document.createElement("img");
+  playImg.src = "assets/svg/play.svg";
+  playImg.alt = "Play";
+  playIcon.appendChild(playImg);
+
+  // Create edit icon
+  const editIcon = document.createElement("div");
+  editIcon.className = "icon edit-icon";
+  const editImg = document.createElement("img");
+  editImg.src = "assets/svg/edit.svg";
+  editImg.alt = "Edit";
+  editIcon.appendChild(editImg);
+
+  // Create delete icon
+  const deleteIcon = document.createElement("div");
+  deleteIcon.className = "icon delete-icon";
+  const deleteImg = document.createElement("img");
+  deleteImg.src = "assets/svg/delete.svg";
+  deleteImg.alt = "Delete";
+  deleteIcon.appendChild(deleteImg);
+
+  // Append icons to actions
+  todoActions.appendChild(playIcon);
+  todoActions.appendChild(editIcon);
+  todoActions.appendChild(deleteIcon);
+
+  // Append wrapper and actions to li
+  li.appendChild(checkboxWrapper);
+  li.appendChild(todoActions);
 
   todoList.appendChild(li);
 }
@@ -177,10 +223,20 @@ function toggleEditSave(icon) {
     const input = item.querySelector(".edit-input");
     const text = input.value.trim();
 
-    // Recreate the label content
+    // Recreate the label content safely
     const forId = item.querySelector('input[type="checkbox"]').id;
     label.setAttribute("for", forId);
-    label.innerHTML = `<span></span>${text}`;
+
+    // Clear existing content and rebuild safely
+    label.innerHTML = "";
+
+    // Create span element
+    const span = document.createElement("span");
+    label.appendChild(span);
+
+    // Create text node for the todo text (safe from XSS)
+    const textNode = document.createTextNode(text);
+    label.appendChild(textNode);
 
     input.remove();
     item.classList.remove("editing");
@@ -243,6 +299,83 @@ const stopIcon = document.querySelector(".stop-icon");
 let isBreak = false;
 let completedTasks = 0;
 
+// GSAP animation function for timer display - individual digit animations
+function animateTimeChange(newTimeText) {
+  // Get all digit spans
+  const digitSpans = timerDisplay.querySelectorAll(".timer-digit");
+
+  // Parse new time into digits array (ignoring colons)
+  const newDigits = newTimeText.replace(/:/g, "").split("");
+
+  // Get current digits from spans
+  const currentDigits = Array.from(digitSpans).map((span) => span.textContent);
+
+  // Animate only digits that changed
+  digitSpans.forEach((span, index) => {
+    if (currentDigits[index] !== newDigits[index]) {
+      const currentDigit = parseInt(currentDigits[index]);
+      const newDigit = parseInt(newDigits[index]);
+      
+      // Determine animation direction based on digit change
+      // Rollover from 0 to 9 gets opposite (downward) animation
+      const isRollover = currentDigit === 0 && newDigit === 9;
+      
+      if (isRollover) {
+        // Downward animation for rollover (0→9)
+        gsap.to(span, {
+          duration: 0.3,
+          y: 30,
+          opacity: 0,
+          ease: "power2.in",
+          onComplete: () => {
+            span.textContent = newDigits[index];
+            gsap.fromTo(
+              span,
+              { y: -30, opacity: 0 },
+              {
+                duration: 0.3,
+                y: 0,
+                opacity: 1,
+                ease: "power2.out",
+              }
+            );
+          },
+        });
+      } else {
+        // Upward animation for normal changes
+        gsap.to(span, {
+          duration: 0.3,
+          y: -30,
+          opacity: 0,
+          ease: "power2.in",
+          onComplete: () => {
+            span.textContent = newDigits[index];
+            gsap.fromTo(
+              span,
+              { y: 30, opacity: 0 },
+              {
+                duration: 0.3,
+                y: 0,
+                opacity: 1,
+                ease: "power2.out",
+              }
+            );
+          },
+        });
+      }
+    }
+  });
+}
+
+// Helper function to set timer digits without animation (for initial setup)
+function setTimerDigits(timeText) {
+  const digitSpans = timerDisplay.querySelectorAll(".timer-digit");
+  const digits = timeText.replace(/:/g, "").split("");
+  digitSpans.forEach((span, index) => {
+    span.textContent = digits[index] || "0";
+  });
+}
+
 function startTimer(li) {
   let taskText = li.querySelector("label").textContent.trim();
   timerTaskTitle.textContent = taskText;
@@ -254,6 +387,15 @@ function startTimer(li) {
   timerOverlay.classList.add("visible");
   pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
 
+  // Display initial time without animation
+  const hours = Math.floor(remainingTime / 3600);
+  const minutes = Math.floor((remainingTime % 3600) / 60);
+  const seconds = remainingTime % 60;
+  const initialTimeText = `${String(hours).padStart(2, "0")}:${String(
+    minutes
+  ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  setTimerDigits(initialTimeText);
+
   // Start background music when timer starts
   playBackgroundMusic(true);
 
@@ -264,9 +406,12 @@ function startTimer(li) {
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
 
-    timerDisplay.textContent = `${String(hours).padStart(2, "0")}:${String(
+    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    // Animate time change with GSAP
+    animateTimeChange(newTimeText);
 
     if (remainingTime <= 0) {
       clearInterval(timerInterval);
@@ -295,6 +440,15 @@ function startBreak() {
   }
   isBreak = true;
 
+  // Display initial break time without animation
+  const hours = Math.floor(remainingTime / 3600);
+  const minutes = Math.floor((remainingTime % 3600) / 60);
+  const seconds = remainingTime % 60;
+  const initialTimeText = `${String(hours).padStart(2, "0")}:${String(
+    minutes
+  ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  setTimerDigits(initialTimeText);
+
   // Continue background music during breaks
   playBackgroundMusic(true);
 
@@ -305,9 +459,12 @@ function startBreak() {
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
 
-    timerDisplay.textContent = `${String(hours).padStart(2, "0")}:${String(
+    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    // Animate time change with GSAP
+    animateTimeChange(newTimeText);
 
     if (remainingTime <= 0) {
       clearInterval(timerInterval);
@@ -322,6 +479,15 @@ function startLongBreak() {
   isBreak = true;
   completedTasks = 0; // Reset completed tasks counter
 
+  // Display initial long break time without animation
+  const hours = Math.floor(remainingTime / 3600);
+  const minutes = Math.floor((remainingTime % 3600) / 60);
+  const seconds = remainingTime % 60;
+  const initialTimeText = `${String(hours).padStart(2, "0")}:${String(
+    minutes
+  ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  setTimerDigits(initialTimeText);
+
   timerInterval = setInterval(() => {
     remainingTime--;
 
@@ -329,9 +495,12 @@ function startLongBreak() {
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
 
-    timerDisplay.textContent = `${String(hours).padStart(2, "0")}:${String(
+    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    // Animate time change with GSAP
+    animateTimeChange(newTimeText);
 
     if (remainingTime <= 0) {
       clearInterval(timerInterval);
@@ -382,9 +551,12 @@ function startTimerCountdown() {
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
 
-    timerDisplay.textContent = `${String(hours).padStart(2, "0")}:${String(
+    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    // Animate time change with GSAP
+    animateTimeChange(newTimeText);
 
     if (remainingTime <= 0) {
       clearInterval(timerInterval);
@@ -462,11 +634,19 @@ function toggleTimerEdit() {
     }
 
     if (!isValid) {
-      // Show professional error message
-      const originalText = timerDisplay.textContent;
-      const originalColor = timerDisplay.style.color;
-      const originalFontSize = timerDisplay.style.fontSize;
+      // Show professional error message - temporarily hide digits
+      const digitSpans = timerDisplay.querySelectorAll(
+        ".timer-digit, .timer-separator"
+      );
+      const originalDisplay = Array.from(digitSpans).map((span) => ({
+        element: span,
+        display: span.style.display,
+      }));
 
+      // Hide all digit spans
+      digitSpans.forEach((span) => (span.style.display = "none"));
+
+      // Show error message
       timerDisplay.textContent = errorMessage;
       timerDisplay.style.color = "#ff4757";
       timerDisplay.style.fontSize = "1.2rem";
@@ -477,9 +657,11 @@ function toggleTimerEdit() {
       timerDisplay.style.animation = "errorShake 0.5s ease-in-out";
 
       setTimeout(() => {
-        timerDisplay.textContent = originalText;
-        timerDisplay.style.color = originalColor;
-        timerDisplay.style.fontSize = originalFontSize;
+        // Restore digits
+        timerDisplay.textContent = "";
+        digitSpans.forEach((span) => (span.style.display = ""));
+        timerDisplay.style.color = "";
+        timerDisplay.style.fontSize = "";
         timerDisplay.style.fontWeight = "";
         timerDisplay.style.textShadow = "";
         timerDisplay.style.animation = "";
@@ -502,7 +684,7 @@ function toggleTimerEdit() {
     const formattedTime = `${String(hours).padStart(2, "0")}:${String(
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    timerDisplay.textContent = formattedTime;
+    animateTimeChange(formattedTime);
 
     // Re-enable controls
     pauseResumeIcon.style.pointerEvents = "";
@@ -512,6 +694,12 @@ function toggleTimerEdit() {
 
     timerDisplay.contentEditable = "false";
     editTimerIcon.querySelector("img").src = "assets/svg/edit.svg";
+
+    // Restore digit spans display
+    const digitSpans = timerDisplay.querySelectorAll(
+      ".timer-digit, .timer-separator"
+    );
+    digitSpans.forEach((span) => (span.style.display = ""));
 
     // Auto-start the timer
     if (remainingTime > 0) {
@@ -534,7 +722,25 @@ function toggleTimerEdit() {
     stopIcon.style.pointerEvents = "none";
     stopIcon.style.opacity = "0.3";
 
-    // Enable editing - show current time for editing
+    // Enable editing - hide digits and show editable text
+    const digitSpans = timerDisplay.querySelectorAll(
+      ".timer-digit, .timer-separator"
+    );
+    const currentDigits = Array.from(
+      timerDisplay.querySelectorAll(".timer-digit")
+    ).map((span) => span.textContent);
+    const currentTime =
+      currentDigits.slice(0, 2).join("") +
+      ":" +
+      currentDigits.slice(2, 4).join("") +
+      ":" +
+      currentDigits.slice(4, 6).join("");
+
+    // Hide digit spans
+    digitSpans.forEach((span) => (span.style.display = "none"));
+
+    // Show editable text
+    timerDisplay.textContent = currentTime;
     timerDisplay.contentEditable = "true";
     timerDisplay.focus();
 

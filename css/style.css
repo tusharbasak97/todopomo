@@ -378,16 +378,26 @@ input[type="number"] {
   border-radius: 8px;
   padding: 10px;
   transition: border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 
-#timer-display:hover {
-  border-color: rgba(255, 255, 255, 0.3);
+.timer-digit,
+.timer-separator {
+  display: inline-block;
+  line-height: 1;
 }
 
-#timer-display[contenteditable="true"] {
-  border-color: var(--white);
-  outline: none;
-  background: rgba(255, 255, 255, 0.1);
+.timer-digit {
+  min-width: 0.6em;
+  text-align: center;
+}
+
+.timer-separator {
+  color: var(--white);
+  opacity: 0.8;
 }
 
 .timer-controls {
