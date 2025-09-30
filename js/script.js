@@ -1103,8 +1103,16 @@ sessionsInput.addEventListener("input", (e) => {
 
 // Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
-  // Stop timer when Escape key is pressed
-  if (e.key === "Escape" && timerInterval) {
+  // Stop timer when Escape key is pressed (but not during edit operations)
+  const isEditingTodo = document.querySelector(".todo-item.editing");
+  const isEditingTimer = timerDisplay.contentEditable === "true";
+
+  if (
+    e.key === "Escape" &&
+    timerInterval &&
+    !isEditingTodo &&
+    !isEditingTimer
+  ) {
     stopTimer();
   }
 });
