@@ -1100,3 +1100,11 @@ sessionsInput.addEventListener("input", (e) => {
   const value = parseInt(e.target.value) || 0;
   if (value < 1) e.target.value = 1;
 });
+
+// Keyboard shortcuts
+document.addEventListener("keydown", (e) => {
+  // Stop timer when Escape key is pressed
+  if (e.key === "Escape" && timerInterval) {
+    stopTimer();
+  }
+});
