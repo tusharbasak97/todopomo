@@ -536,30 +536,30 @@ input[type="number"] {
 }
 
 /* Disabled state for timer controls when locked */
-.timer-overlay .timer-control-icon,
-.timer-overlay .edit-timer-icon,
-.timer-overlay .sound-toggle-icon {
+/* Disabled state for timer controls when locked */
+#timer-overlay.locked .timer-control-icon,
+#timer-overlay.locked .edit-timer-icon,
+#timer-overlay.locked .sound-toggle-icon {
   pointer-events: none;
   opacity: 0.3;
   cursor: not-allowed;
 }
 
-.timer-overlay .timer-control-icon img,
-.timer-overlay .edit-timer-icon img,
-.timer-overlay .sound-toggle-icon img {
+#timer-overlay.locked .timer-control-icon img,
+#timer-overlay.locked .edit-timer-icon img,
+#timer-overlay.locked .sound-toggle-icon img {
   filter: grayscale(1);
 }
 
-.timer-lock-toggle {
+#timer-overlay.locked .timer-lock-toggle {
   pointer-events: auto !important;
   opacity: 1 !important;
   cursor: pointer !important;
 }
 
-.timer-lock-toggle .lock-toggle-icon img {
+#timer-overlay.locked .timer-lock-toggle .lock-toggle-icon img {
   filter: invert(1) !important;
 }
-
 .todo-actions {
   display: flex;
   align-items: center;

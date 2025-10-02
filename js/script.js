@@ -587,6 +587,8 @@ function startNextTask() {
 }
 
 function togglePauseResume() {
+  if (isLocked) return; // Prevent pause/resume when locked
+
   const img = pauseResumeIcon.querySelector("img");
   img.style.opacity = 0;
 
@@ -644,6 +646,8 @@ function startTimerCountdown() {
 }
 
 function stopTimer() {
+  if (isLocked) return; // Prevent stopping when locked
+
   clearInterval(timerInterval);
   stopBackgroundMusic(); // Stop music when timer is stopped
   hideTimer();
@@ -1005,12 +1009,8 @@ if (savedLocked !== null) {
 editTimerIcon.addEventListener("click", (e) => {
   if (!isLocked) toggleTimerEdit();
 });
-pauseResumeIcon.addEventListener("click", (e) => {
-  if (!isLocked) togglePauseResume();
-});
-stopIcon.addEventListener("click", (e) => {
-  if (!isLocked) stopTimer();
-});
+pauseResumeIcon.addEventListener("click", togglePauseResume);
+stopIcon.addEventListener("click", stopTimer);
 soundToggleIcon.addEventListener("click", toggleSound);
 lockToggleButton.addEventListener("click", toggleLock);
 lockToggleButton.addEventListener("keydown", (e) => {
