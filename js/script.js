@@ -5,6 +5,7 @@ const newTodoInput = document.getElementById("new-todo");
 // Background music variables
 const backgroundMusic = document.getElementById("background-music");
 let isMusicEnabled = true;
+let isLocked = false;
 
 // Background music control functions
 function playBackgroundMusic(reset = false) {
@@ -589,6 +590,8 @@ function hideTimer() {
 
 // Timer editing functionality
 function toggleTimerEdit() {
+  if (isLocked) return; // Prevent editing when locked
+
   const isEditable = timerDisplay.contentEditable === "true";
 
   if (isEditable) {
@@ -880,11 +883,53 @@ if (savedMusicEnabled !== null) {
   }
 }
 
+// Lock toggle functionality
+const lockToggleIcon = document.querySelector(".lock-toggle-icon");
+
+function toggleLock() {
+  isLocked = !isLocked;
+  const img = lockToggleIcon.querySelector("img");
+
+  // Add switching class for animation
+  lockToggleIcon.classList.add("switching");
+
+  setTimeout(() => {
+    if (isLocked) {
+      img.src = "assets/svg/lock.svg";
+      img.alt = "Locked";
+    } else {
+      img.src = "assets/svg/unlock.svg";
+      img.alt = "Unlocked";
+    }
+
+    // Remove switching class to animate back in
+    lockToggleIcon.classList.remove("switching");
+  }, 150); // Half of the transition duration
+
+  // Save lock preference
+  localStorage.setItem("isLocked", isLocked);
+}
+
+// Load lock preference
+const savedLocked = localStorage.getItem("isLocked");
+if (savedLocked !== null) {
+  isLocked = savedLocked === "true";
+  const img = lockToggleIcon.querySelector("img");
+  if (isLocked) {
+    img.src = "assets/svg/lock.svg";
+    img.alt = "Locked";
+  } else {
+    img.src = "assets/svg/unlock.svg";
+    img.alt = "Unlocked";
+  }
+}
+
 // Event listeners for timer controls
 editTimerIcon.addEventListener("click", toggleTimerEdit);
 pauseResumeIcon.addEventListener("click", togglePauseResume);
 stopIcon.addEventListener("click", stopTimer);
 soundToggleIcon.addEventListener("click", toggleSound);
+lockToggleIcon.addEventListener("click", toggleLock);
 
 addButton.addEventListener("click", handleAddButtonClick);
 newTodoInput.addEventListener("keydown", (e) => {
