@@ -62,6 +62,66 @@ if (backgroundMusic) {
   backgroundMusic.volume = 0.3;
 }
 
+// Fullscreen functionality
+function enterFullscreen() {
+  const element = document.documentElement;
+  
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.mozRequestFullScreen) { // Firefox
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) { // Chrome, Safari, Opera
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) { // IE/Edge
+    element.msRequestFullscreen();
+  }
+  
+  // Request landscape orientation on mobile
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(err => {
+      console.log('Orientation lock failed:', err);
+    });
+  }
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.mozCancelFullScreen) { // Firefox
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) { // IE/Edge
+    document.msExitFullscreen();
+  }
+  
+  // Unlock orientation
+  if (screen.orientation && screen.orientation.unlock) {
+    screen.orientation.unlock();
+  }
+}
+
+// Listen for fullscreen changes
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+function handleFullscreenChange() {
+  // If timer overlay is visible but we're not in fullscreen, stop the timer
+  const isTimerActive = timerOverlay.classList.contains("visible");
+  const isFullscreen = !!(
+    document.fullscreenElement ||
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement
+  );
+  
+  if (isTimerActive && !isFullscreen) {
+    stopTimer();
+  }
+}
+
 // Pomodoro settings
 let pomodoroDuration =
   parseInt(localStorage.getItem("pomodoroDuration")) || 180 * 60; // 180 minutes in seconds
@@ -386,6 +446,7 @@ function startTimer(li) {
   isBreak = false;
 
   timerOverlay.classList.add("visible");
+  enterFullscreen(); // Enter fullscreen when timer starts
   pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
 
   // Display initial time without animation
@@ -584,6 +645,7 @@ function stopTimer() {
 
 function hideTimer() {
   timerOverlay.classList.remove("visible");
+  exitFullscreen(); // Exit fullscreen when timer is hidden
   timerTaskTitle.textContent = "";
   stopBackgroundMusic(); // Stop music when timer is hidden
 }
@@ -885,6 +947,7 @@ if (savedMusicEnabled !== null) {
 
 // Lock toggle functionality
 const lockToggleIcon = document.querySelector(".lock-toggle-icon");
+const lockToggleButton = document.querySelector(".timer-lock-toggle");
 
 function toggleLock() {
   isLocked = !isLocked;
@@ -897,9 +960,13 @@ function toggleLock() {
     if (isLocked) {
       img.src = "assets/svg/lock.svg";
       img.alt = "Locked";
+      lockToggleButton.setAttribute("aria-pressed", "true");
+      lockToggleButton.classList.add("is-locked");
     } else {
       img.src = "assets/svg/unlock.svg";
       img.alt = "Unlocked";
+      lockToggleButton.setAttribute("aria-pressed", "false");
+      lockToggleButton.classList.remove("is-locked");
     }
 
     // Remove switching class to animate back in
@@ -918,9 +985,13 @@ if (savedLocked !== null) {
   if (isLocked) {
     img.src = "assets/svg/lock.svg";
     img.alt = "Locked";
+    lockToggleButton.setAttribute("aria-pressed", "true");
+    lockToggleButton.classList.add("is-locked");
   } else {
     img.src = "assets/svg/unlock.svg";
     img.alt = "Unlocked";
+    lockToggleButton.setAttribute("aria-pressed", "false");
+    lockToggleButton.classList.remove("is-locked");
   }
 }
 
@@ -929,7 +1000,13 @@ editTimerIcon.addEventListener("click", toggleTimerEdit);
 pauseResumeIcon.addEventListener("click", togglePauseResume);
 stopIcon.addEventListener("click", stopTimer);
 soundToggleIcon.addEventListener("click", toggleSound);
-lockToggleIcon.addEventListener("click", toggleLock);
+lockToggleButton.addEventListener("click", toggleLock);
+lockToggleButton.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    toggleLock();
+  }
+});
 
 addButton.addEventListener("click", handleAddButtonClick);
 newTodoInput.addEventListener("keydown", (e) => {
