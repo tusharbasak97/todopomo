@@ -65,21 +65,24 @@ if (backgroundMusic) {
 // Fullscreen functionality
 function enterFullscreen() {
   const element = document.documentElement;
-  
+
   if (element.requestFullscreen) {
     element.requestFullscreen();
-  } else if (element.mozRequestFullScreen) { // Firefox
+  } else if (element.mozRequestFullScreen) {
+    // Firefox
     element.mozRequestFullScreen();
-  } else if (element.webkitRequestFullscreen) { // Chrome, Safari, Opera
+  } else if (element.webkitRequestFullscreen) {
+    // Chrome, Safari, Opera
     element.webkitRequestFullscreen();
-  } else if (element.msRequestFullscreen) { // IE/Edge
+  } else if (element.msRequestFullscreen) {
+    // IE/Edge
     element.msRequestFullscreen();
   }
-  
+
   // Request landscape orientation on mobile
   if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(err => {
-      console.log('Orientation lock failed:', err);
+    screen.orientation.lock("landscape").catch((err) => {
+      console.log("Orientation lock failed:", err);
     });
   }
 }
@@ -87,14 +90,17 @@ function enterFullscreen() {
 function exitFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen();
-  } else if (document.mozCancelFullScreen) { // Firefox
+  } else if (document.mozCancelFullScreen) {
+    // Firefox
     document.mozCancelFullScreen();
-  } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+  } else if (document.webkitExitFullscreen) {
+    // Chrome, Safari, Opera
     document.webkitExitFullscreen();
-  } else if (document.msExitFullscreen) { // IE/Edge
+  } else if (document.msExitFullscreen) {
+    // IE/Edge
     document.msExitFullscreen();
   }
-  
+
   // Unlock orientation
   if (screen.orientation && screen.orientation.unlock) {
     screen.orientation.unlock();
@@ -102,10 +108,10 @@ function exitFullscreen() {
 }
 
 // Listen for fullscreen changes
-document.addEventListener('fullscreenchange', handleFullscreenChange);
-document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+document.addEventListener("fullscreenchange", handleFullscreenChange);
+document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
 function handleFullscreenChange() {
   // If timer overlay is visible but we're not in fullscreen, stop the timer
@@ -116,7 +122,7 @@ function handleFullscreenChange() {
     document.webkitFullscreenElement ||
     document.msFullscreenElement
   );
-  
+
   if (isTimerActive && !isFullscreen) {
     stopTimer();
   }
@@ -996,9 +1002,15 @@ if (savedLocked !== null) {
 }
 
 // Event listeners for timer controls
-editTimerIcon.addEventListener("click", toggleTimerEdit);
-pauseResumeIcon.addEventListener("click", togglePauseResume);
-stopIcon.addEventListener("click", stopTimer);
+editTimerIcon.addEventListener("click", (e) => {
+  if (!isLocked) toggleTimerEdit();
+});
+pauseResumeIcon.addEventListener("click", (e) => {
+  if (!isLocked) togglePauseResume();
+});
+stopIcon.addEventListener("click", (e) => {
+  if (!isLocked) stopTimer();
+});
 soundToggleIcon.addEventListener("click", toggleSound);
 lockToggleButton.addEventListener("click", toggleLock);
 lockToggleButton.addEventListener("keydown", (e) => {
@@ -1225,7 +1237,7 @@ sessionsInput.addEventListener("input", (e) => {
 
 // Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
-  // Stop timer when Escape key is pressed (but not during edit operations)
+  // Stop timer when Escape key is pressed (but not during edit operations or when locked)
   const isEditingTodo = document.querySelector(".todo-item.editing");
   const isEditingTimer = timerDisplay.contentEditable === "true";
 
@@ -1233,7 +1245,8 @@ document.addEventListener("keydown", (e) => {
     e.key === "Escape" &&
     timerInterval &&
     !isEditingTodo &&
-    !isEditingTimer
+    !isEditingTimer &&
+    !isLocked
   ) {
     stopTimer();
   }
