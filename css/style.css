@@ -965,3 +965,39 @@ input[type="number"] {
     transform: translate(-50%, -50%) scale(0.9);
   }
 }
+
+/* Enforce portrait mode on mobile devices with rotation and message */
+@media screen and (orientation: landscape) and (max-width: 768px) {
+  body {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+  .orientation-message {
+    display: block !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    background: var(--bg-color);
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: var(--radius-medium);
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    max-width: 300px;
+  }
+}
+
+.orientation-message {
+  display: none;
+}

@@ -167,6 +167,9 @@
     <script src="js/main.js" type="module"></script>
   </head>
   <body>
+    <div class="orientation-message">
+      📱 Please rotate your device to portrait mode for the best experience
+    </div>
     <div class="content-container">
       <div class="checkbox-wrapper-54">
         <label class="switch">
@@ -390,6 +393,33 @@
       .settings-buttons button:hover {
         box-shadow: 2px 2px 4px var(--shadow-dark),
           -2px -2px 4px var(--shadow-light);
+      }
+
+      /* Orientation Message */
+      .orientation-message {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-size: 16px;
+        z-index: 1000;
+        display: none;
+      }
+
+      @media screen and (orientation: portrait) {
+        .orientation-message {
+          display: none;
+        }
+      }
+
+      @media screen and (orientation: landscape) {
+        .orientation-message {
+          display: block;
+        }
       }
     </style>
   </body>
