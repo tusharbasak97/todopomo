@@ -2,7 +2,7 @@
   "name": "TodoPomo - Pomodoro Timer & Todo List",
   "short_name": "TodoPomo",
   "description": "Complete your daily tasks faster with TodoPomo - a free online Pomodoro timer with integrated todo list",
-  "start_url": "/",
+  "start_url": "/todopomo/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",

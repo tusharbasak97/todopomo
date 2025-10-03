@@ -210,7 +210,7 @@ function showInstallPrompt() {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, hsl(230, 73%, 58%) 0%, hsl(260, 47%, 47%) 100%);
     color: white;
     padding: 15px 25px;
     border-radius: 12px;
@@ -230,7 +230,7 @@ function showInstallPrompt() {
     </div>
     <button id="install-btn" style="
       background: white;
-      color: #667eea;
+      color: hsl(230, 73%, 58%);
       border: none;
       padding: 8px 20px;
       border-radius: 8px;
@@ -242,7 +242,7 @@ function showInstallPrompt() {
     <button id="dismiss-btn" style="
       background: transparent;
       color: white;
-      border: 1px solid rgba(255,255,255,0.5);
+      border: 1px solid hsla(0, 0%, 100%, 0.5);
       padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
