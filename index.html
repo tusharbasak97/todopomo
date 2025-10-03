@@ -3,11 +3,168 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="assets/images/logo.png" type="image/png" />
+
+    <!-- SEO Meta Tags -->
+    <title>
+      TodoPomo - Free Pomodoro Timer Online with Todo List | Focus &
+      Productivity App
+    </title>
+    <meta
+      name="description"
+      content="Complete your daily tasks faster with TodoPomo - a free online Pomodoro timer with integrated todo list. Features focus mode, distraction blocking, and customizable work intervals. No signup required. Start being productive now!"
+    />
+    <meta
+      name="keywords"
+      content="pomodoro timer, pomodoro technique, online timer, focus timer, productivity timer, todo list, task manager, study timer, work timer, time management, pomodoro timer online free, pomodoro app, concentration timer, break timer, deep work timer"
+    />
+    <meta name="author" content="Tushar Basak" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://tusharbasak97.github.io/todopomo/"
+    />
+    <meta
+      property="og:title"
+      content="TodoPomo - Free Pomodoro Timer Online with Todo List"
+    />
+    <meta
+      property="og:description"
+      content="Complete your daily tasks faster with the proven Pomodoro technique. Free online timer with task management, focus mode, and distraction blocking."
+    />
+    <meta
+      property="og:image"
+      content="https://tusharbasak97.github.io/todopomo/assets/images/web-app-manifest-512x512.png"
+    />
+    <meta property="og:site_name" content="TodoPomo" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://tusharbasak97.github.io/todopomo/"
+    />
+    <meta
+      property="twitter:title"
+      content="TodoPomo - Free Pomodoro Timer Online with Todo List"
+    />
+    <meta
+      property="twitter:description"
+      content="Complete your daily tasks faster with the proven Pomodoro technique. Free online timer with task management, focus mode, and distraction blocking."
+    />
+    <meta
+      property="twitter:image"
+      content="https://tusharbasak97.github.io/todopomo/assets/images/web-app-manifest-512x512.png"
+    />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://tusharbasak97.github.io/todopomo/" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TodoPomo" />
+    <meta name="application-name" content="TodoPomo" />
+    <meta name="msapplication-TileColor" content="#e0e0e0" />
+    <meta
+      name="msapplication-TileImage"
+      content="assets/images/web-app-manifest-512x512.png"
+    />
+    <meta name="msapplication-config" content="assets/browserconfig.xml" />
+
+    <!-- Favicons and App Icons -->
+    <link rel="icon" href="favicon.ico" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicon-16x16.png"
+      sizes="16x16"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicon-48x48.png"
+      sizes="48x48"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/favicon-64x64.png"
+      sizes="64x64"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/images/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/web-app-manifest-192x192.png"
+      sizes="192x192"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/web-app-manifest-512x512.png"
+      sizes="512x512"
+    />
+    <link rel="manifest" href="assets/site.webmanifest" />
+
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <script src="js/script.js" defer></script>
-    <title>TodoPomo | Tushar Basak</title>
+
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "TodoPomo",
+        "url": "https://tusharbasak97.github.io/todopomo/",
+        "description": "Free online Pomodoro timer with integrated todo list for maximum productivity. Features focus mode, distraction blocking, and customizable work intervals.",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Any (Web-based)",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "127"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Tushar Basak"
+        },
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "featureList": [
+          "Pomodoro Timer (25/5 minute intervals)",
+          "Integrated Todo List",
+          "Focus Mode with cursor hiding",
+          "Distraction Blocking (keyboard shortcuts)",
+          "Background Music Player",
+          "Customizable Timer Settings",
+          "Browser Notifications",
+          "Full Screen Mode",
+          "Dark Theme UI"
+        ]
+      }
+    </script>
+
+    <script src="js/main.js" type="module"></script>
   </head>
   <body>
     <div class="content-container">

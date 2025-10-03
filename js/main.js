@@ -1,0 +1,316 @@
+/**
+ * Main Application Module
+ * Initializes and coordinates all modules
+ */
+
+import { todoManager } from "./modules/todos.js";
+import { timerManager } from "./modules/timer.js";
+import { settingsManager } from "./modules/settings.js";
+import { uiManager } from "./modules/ui.js";
+import { storage } from "./modules/storage.js";
+
+class App {
+  constructor() {
+    this.initialized = false;
+  }
+
+  init() {
+    if (this.initialized) {
+      return;
+    }
+
+    // Wait for DOM to be ready
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => this.start());
+    } else {
+      this.start();
+    }
+  }
+
+  start() {
+    try {
+      // Initialize todo manager
+      const todoList = document.getElementById("todo-list");
+      todoManager.init(todoList);
+      todoManager.setupEventListeners();
+
+      // Initialize timer manager
+      const timerElements = {
+        timerOverlay: document.getElementById("timer-overlay"),
+        timerDisplay: document.getElementById("timer-display"),
+        timerTaskTitle: document.getElementById("timer-task-title"),
+        editTimerIcon: document.querySelector(".edit-timer-icon"),
+        pauseResumeIcon: document.querySelector(".pause-icon"),
+        stopIcon: document.querySelector(".stop-icon"),
+      };
+      timerManager.init(timerElements);
+
+      // Connect todo manager to timer manager (avoiding circular dependency)
+      todoManager.setStartTimerCallback((todoItem) =>
+        timerManager.start(todoItem)
+      );
+
+      // Initialize settings manager
+      const settingsElements = {
+        settingsButton: document.getElementById("settings-button"),
+        settingsPanel: document.getElementById("settings-panel"),
+        saveSettingsButton: document.getElementById("save-settings"),
+        backToTodoButton: document.getElementById("back-to-todo"),
+        pomodoroMinInput: document.getElementById("pomodoro-min"),
+        shortBreakMinInput: document.getElementById("short-break-min"),
+        longBreakMinInput: document.getElementById("long-break-min"),
+        sessionsInput: document.getElementById("sessions-before-long-break"),
+      };
+      settingsManager.init(settingsElements);
+
+      // Initialize UI manager
+      const uiElements = {
+        darkModeToggle: document.getElementById("dark-mode-toggle"),
+        soundToggleIcon: document.querySelector(".sound-toggle-icon"),
+        lockToggleIcon: document.querySelector(".lock-toggle-icon"),
+        lockToggleButton: document.querySelector(".timer-lock-toggle"),
+        resetTrigger: document.getElementById("trigger"),
+        currentYear: document.getElementById("currentYear"),
+      };
+      uiManager.init(uiElements);
+
+      // Setup add todo functionality
+      this.setupAddTodo();
+
+      // Load initial data
+      this.loadInitialData();
+
+      this.initialized = true;
+    } catch (error) {
+      this.showFatalError(error);
+    }
+  }
+
+  setupAddTodo() {
+    const addButton = document.getElementById("add-button");
+    const newTodoInput = document.getElementById("new-todo");
+
+    const handleAdd = () => {
+      const text = newTodoInput.value.trim();
+      if (text !== "") {
+        todoManager.add(text);
+        newTodoInput.value = "";
+        todoManager.save();
+      }
+    };
+
+    addButton.addEventListener("click", handleAdd);
+    newTodoInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        handleAdd();
+      }
+    });
+  }
+
+  loadInitialData() {
+    const savedTodos = storage.getTodos();
+
+    if (savedTodos.length === 0) {
+      // Add mock todos if none exist
+      const mockTodos = [
+        { text: "Task 1", completed: false },
+        { text: "Task 2", completed: false },
+        { text: "Task 3", completed: false },
+      ];
+      mockTodos.forEach((todo) => todoManager.add(todo.text, todo.completed));
+      todoManager.save();
+    } else {
+      // Load saved todos
+      todoManager.load();
+    }
+  }
+
+  showFatalError(error) {
+    const errorDiv = document.createElement("div");
+    errorDiv.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: hsla(348, 100%, 61%, 0.95);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        font-size: 16px;
+        text-align: center;
+        box-shadow: 0 8px 32px hsla(348, 100%, 61%, 0.3);
+        z-index: 99999;
+        max-width: 500px;
+      ">
+        <h3 style="margin: 0 0 10px 0;">⚠️ Application Error</h3>
+        <p style="margin: 0;">${error.message}</p>
+        <button onclick="window.location.reload()" style="
+          margin-top: 20px;
+          padding: 10px 20px;
+          background: white;
+          color: hsl(348, 100%, 61%);
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+        ">Reload Page</button>
+      </div>
+    `;
+    document.body.appendChild(errorDiv);
+  }
+}
+
+// Create and initialize app
+const app = new App();
+app.init();
+
+// Register Service Worker for caching and offline support
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/js/service-worker.js")
+      .then((registration) => {
+        // Service worker registered successfully - check for updates
+        registration.update();
+      })
+      .catch(() => {
+        // Service worker registration failed (silent fail)
+      });
+  });
+}
+
+// Handle PWA installation with 3-second prompt
+let deferredPrompt;
+let installPromptShown = false;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  // Prevent the default browser install prompt
+  e.preventDefault();
+  // Store the event for later use
+  deferredPrompt = e;
+
+  // Show install prompt after 3 seconds (only once)
+  if (!installPromptShown) {
+    setTimeout(() => {
+      showInstallPrompt();
+    }, 3000);
+  }
+});
+
+function showInstallPrompt() {
+  if (!deferredPrompt || installPromptShown) return;
+
+  installPromptShown = true;
+
+  // Create install prompt overlay
+  const installBanner = document.createElement("div");
+  installBanner.style.cssText = `
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    animation: slideDown 0.3s ease-out;
+  `;
+
+  installBanner.innerHTML = `
+    <div style="flex: 1;">
+      <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">📱 Install TodoPomo</div>
+      <div style="font-size: 13px; opacity: 0.9;">Add to home screen for faster access & offline use</div>
+    </div>
+    <button id="install-btn" style="
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: transform 0.2s;
+    ">Install</button>
+    <button id="dismiss-btn" style="
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    ">Later</button>
+  `;
+
+  // Add animation
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  document.body.appendChild(installBanner);
+
+  // Install button click
+  document.getElementById("install-btn").addEventListener("click", () => {
+    installBanner.remove();
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        deferredPrompt = null;
+      });
+    }
+  });
+
+  // Dismiss button click
+  document.getElementById("dismiss-btn").addEventListener("click", () => {
+    installBanner.remove();
+  });
+
+  // Auto-dismiss after 10 seconds
+  setTimeout(() => {
+    if (installBanner.parentNode) {
+      installBanner.remove();
+    }
+  }, 10000);
+}
+
+// Track when app is installed
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null;
+  installPromptShown = true;
+});
+
+// Export for debugging
+window.__todopomo = {
+  app,
+  todoManager,
+  timerManager,
+  settingsManager,
+  uiManager,
+  storage,
+  // Allow manual installation via console if needed
+  installApp: () => {
+    if (deferredPrompt && !installPromptShown) {
+      showInstallPrompt();
+    }
+  },
+};
