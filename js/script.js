@@ -117,10 +117,18 @@ async function deactivateSilentFocusMode() {
   const focusEndTime = Date.now();
   const sessionDuration = Math.floor((focusEndTime - focusStartTime) / 1000);
 
-  console.log(`🏁 Silent Focus Mode Deactivated - Session lasted ${Math.floor(sessionDuration / 60)}m ${sessionDuration % 60}s`);
+  console.log(
+    `🏁 Silent Focus Mode Deactivated - Session lasted ${Math.floor(
+      sessionDuration / 60
+    )}m ${sessionDuration % 60}s`
+  );
 
   // Calculate focus quality score
-  const focusQuality = calculateFocusQuality(sessionDuration, distractionCount, tabSwitchCount);
+  const focusQuality = calculateFocusQuality(
+    sessionDuration,
+    distractionCount,
+    tabSwitchCount
+  );
 
   // Store session data
   storeFocusSessionData(sessionDuration, focusQuality);
@@ -157,7 +165,9 @@ async function activateWakeLock() {
   if ("wakeLock" in navigator) {
     try {
       wakeLockSentinel = await navigator.wakeLock.request("screen");
-      console.log("🔒 Screen wake lock activated - screen won't sleep during focus");
+      console.log(
+        "🔒 Screen wake lock activated - screen won't sleep during focus"
+      );
 
       wakeLockSentinel.addEventListener("release", () => {
         console.log("🔓 Screen wake lock released");
@@ -181,16 +191,23 @@ async function deactivateWakeLock() {
 
 function activateWebsiteBlocking() {
   // Simulate website blocking by intercepting certain actions
-  const distractingSites = ['facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'reddit.com', 'tiktok.com'];
+  const distractingSites = [
+    "facebook.com",
+    "twitter.com",
+    "instagram.com",
+    "youtube.com",
+    "reddit.com",
+    "tiktok.com",
+  ];
 
   // Override window.open to block distracting sites
   const originalWindowOpen = window.open;
-  window.open = function(url, ...args) {
-    if (url && distractingSites.some(site => url.includes(site))) {
+  window.open = function (url, ...args) {
+    if (url && distractingSites.some((site) => url.includes(site))) {
       if (notificationPermission) {
         new Notification("🚫 Focus Mode Active", {
           body: "Distracting website blocked. Stay focused!",
-          icon: "/assets/images/logo.png"
+          icon: "/assets/images/logo.png",
         });
       }
       distractionCount++;
@@ -224,7 +241,7 @@ function handleVisibilityChange() {
     if (notificationPermission && tabSwitchCount % 3 === 0) {
       new Notification("🎯 Focus Reminder", {
         body: `You've switched tabs ${tabSwitchCount} times. Stay focused on your task!`,
-        icon: "/assets/images/logo.png"
+        icon: "/assets/images/logo.png",
       });
     }
   }
@@ -242,14 +259,14 @@ function deactivateKeyboardBlocking() {
 function focusKeyboardHandler(e) {
   // Block common distraction shortcuts during focus mode
   const blockedShortcuts = [
-    { ctrl: true, key: 't' }, // New tab
-    { ctrl: true, key: 'n' }, // New window
-    { ctrl: true, shift: true, key: 'n' }, // New incognito window
-    { alt: true, key: 'Tab' }, // Alt+Tab (task switching)
-    { key: 'F11' }, // Fullscreen toggle
+    { ctrl: true, key: "t" }, // New tab
+    { ctrl: true, key: "n" }, // New window
+    { ctrl: true, shift: true, key: "n" }, // New incognito window
+    { alt: true, key: "Tab" }, // Alt+Tab (task switching)
+    { key: "F11" }, // Fullscreen toggle
   ];
 
-  const isBlocked = blockedShortcuts.some(shortcut => {
+  const isBlocked = blockedShortcuts.some((shortcut) => {
     return (
       (!shortcut.ctrl || e.ctrlKey) &&
       (!shortcut.shift || e.shiftKey) &&
@@ -266,7 +283,7 @@ function focusKeyboardHandler(e) {
     if (notificationPermission && distractionCount % 5 === 0) {
       new Notification("🎯 Stay Focused", {
         body: "Distraction shortcut blocked. Keep your focus on the task!",
-        icon: "/assets/images/logo.png"
+        icon: "/assets/images/logo.png",
       });
     }
 
@@ -278,38 +295,38 @@ function focusKeyboardHandler(e) {
 let cursorTimeout;
 function activateCursorHiding() {
   const hideCursor = () => {
-    document.body.style.cursor = 'none';
+    document.body.style.cursor = "none";
   };
 
   const showCursor = () => {
-    document.body.style.cursor = 'auto';
+    document.body.style.cursor = "auto";
     clearTimeout(cursorTimeout);
     cursorTimeout = setTimeout(hideCursor, 3000); // Hide after 3 seconds of inactivity
   };
 
-  document.addEventListener('mousemove', showCursor);
+  document.addEventListener("mousemove", showCursor);
   cursorTimeout = setTimeout(hideCursor, 3000);
 
   console.log("🖱️ Cursor auto-hide activated");
 }
 
 function deactivateCursorHiding() {
-  document.body.style.cursor = 'auto';
+  document.body.style.cursor = "auto";
   clearTimeout(cursorTimeout);
-  document.removeEventListener('mousemove', showCursor);
+  document.removeEventListener("mousemove", showCursor);
 }
 
 function enhanceAmbientSounds() {
   if (backgroundMusic && isMusicEnabled) {
     // Enhance the focus music with subtle volume adjustments
-    backgroundMusic.volume = 0.4; // Slightly higher volume for focus
+    backgroundMusic.volume = 0.3; // Slightly higher volume for focus
     console.log("🎵 Ambient focus sounds enhanced");
   }
 }
 
 function deactivateAmbientSounds() {
   if (backgroundMusic) {
-    backgroundMusic.volume = 0.3; // Return to normal volume
+    backgroundMusic.volume = 0.2; // Return to normal volume
   }
 }
 
@@ -317,9 +334,14 @@ function activateNotificationBlocking() {
   // Simulate blocking system notifications by overriding the Notification constructor
   if ("Notification" in window) {
     window.originalNotification = window.Notification;
-    window.Notification = function(...args) {
+    window.Notification = function (...args) {
       // Only allow our focus-related notifications
-      if (args[0] && (args[0].includes("Focus") || args[0].includes("🎯") || args[0].includes("🚫"))) {
+      if (
+        args[0] &&
+        (args[0].includes("Focus") ||
+          args[0].includes("🎯") ||
+          args[0].includes("🚫"))
+      ) {
         return new window.originalNotification(...args);
       }
       console.log("🔕 Blocked external notification during focus mode");
@@ -342,7 +364,13 @@ function calculateFocusQuality(duration, distractions, tabSwitches) {
   const tabSwitchPenalty = tabSwitches * 3;
   const durationBonus = Math.min(duration / 60, 30); // Bonus for longer sessions, capped at 30 minutes
 
-  const score = Math.max(0, Math.min(100, baseScore - distractionPenalty - tabSwitchPenalty + durationBonus));
+  const score = Math.max(
+    0,
+    Math.min(
+      100,
+      baseScore - distractionPenalty - tabSwitchPenalty + durationBonus
+    )
+  );
   return Math.round(score);
 }
 
@@ -352,10 +380,12 @@ function storeFocusSessionData(duration, quality) {
     duration: duration,
     quality: quality,
     distractions: distractionCount,
-    tabSwitches: tabSwitchCount
+    tabSwitches: tabSwitchCount,
   };
 
-  const existingSessions = JSON.parse(localStorage.getItem('focusSessions') || '[]');
+  const existingSessions = JSON.parse(
+    localStorage.getItem("focusSessions") || "[]"
+  );
   existingSessions.push(sessionData);
 
   // Keep only last 50 sessions
@@ -363,7 +393,7 @@ function storeFocusSessionData(duration, quality) {
     existingSessions.splice(0, existingSessions.length - 50);
   }
 
-  localStorage.setItem('focusSessions', JSON.stringify(existingSessions));
+  localStorage.setItem("focusSessions", JSON.stringify(existingSessions));
   console.log("💾 Focus session data stored");
 }
 
@@ -667,10 +697,11 @@ function handleTodoListChange(e) {
 }
 
 // Timer variables
-let timerInterval;
+let timerRequest;
 let currentTimerLi;
 let remainingTime;
 let isPaused = false;
+let lastFrameTime = null;
 
 const timerOverlay = document.getElementById("timer-overlay");
 const timerDisplay = document.getElementById("timer-display");
@@ -786,35 +817,8 @@ function startTimer(li) {
   // Start background music when timer starts
   playBackgroundMusic(true);
 
-  timerInterval = setInterval(() => {
-    remainingTime--;
-
-    const hours = Math.floor(remainingTime / 3600);
-    const minutes = Math.floor((remainingTime % 3600) / 60);
-    const seconds = remainingTime % 60;
-
-    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
-      minutes
-    ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-
-    // Animate time change with GSAP
-    animateTimeChange(newTimeText);
-
-    if (remainingTime <= 0) {
-      clearInterval(timerInterval);
-      if (!isBreak) {
-        // Task completed, mark as done and start break
-        const checkbox = currentTimerLi.querySelector('input[type="checkbox"]');
-        checkbox.checked = true;
-        toggleTodoCompleted(checkbox);
-        completedTasks++;
-        startBreak();
-      } else {
-        // Break completed, start next task
-        startNextTask();
-      }
-    }
-  }, 1000);
+  lastFrameTime = performance.now();
+  timerRequest = requestAnimationFrame(updateTimer);
 }
 
 function startBreak() {
@@ -839,25 +843,8 @@ function startBreak() {
   // Continue background music during breaks
   playBackgroundMusic(true);
 
-  timerInterval = setInterval(() => {
-    remainingTime--;
-
-    const hours = Math.floor(remainingTime / 3600);
-    const minutes = Math.floor((remainingTime % 3600) / 60);
-    const seconds = remainingTime % 60;
-
-    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
-      minutes
-    ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-
-    // Animate time change with GSAP
-    animateTimeChange(newTimeText);
-
-    if (remainingTime <= 0) {
-      clearInterval(timerInterval);
-      startNextTask();
-    }
-  }, 1000);
+  lastFrameTime = performance.now();
+  timerRequest = requestAnimationFrame(updateTimer);
 }
 
 function startLongBreak() {
@@ -922,7 +909,7 @@ function togglePauseResume() {
       // Pause
       img.src = "assets/svg/play.svg";
       isPaused = true;
-      clearInterval(timerInterval);
+      cancelAnimationFrame(timerRequest);
       pauseBackgroundMusic(); // Pause music
     }
     img.style.opacity = 1;
@@ -933,41 +920,14 @@ function startTimerCountdown() {
   // Ensure music is playing when countdown starts
   playBackgroundMusic();
 
-  timerInterval = setInterval(() => {
-    remainingTime--;
-
-    const hours = Math.floor(remainingTime / 3600);
-    const minutes = Math.floor((remainingTime % 3600) / 60);
-    const seconds = remainingTime % 60;
-
-    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
-      minutes
-    ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-
-    // Animate time change with GSAP
-    animateTimeChange(newTimeText);
-
-    if (remainingTime <= 0) {
-      clearInterval(timerInterval);
-      if (!isBreak) {
-        // Task completed, mark as done and start break
-        const checkbox = currentTimerLi.querySelector('input[type="checkbox"]');
-        checkbox.checked = true;
-        toggleTodoCompleted(checkbox);
-        completedTasks++;
-        startBreak();
-      } else {
-        // Break completed, start next task
-        startNextTask();
-      }
-    }
-  }, 1000);
+  lastFrameTime = performance.now();
+  timerRequest = requestAnimationFrame(updateTimer);
 }
 
 function stopTimer() {
   if (isLocked) return; // Prevent stopping when locked
 
-  clearInterval(timerInterval);
+  cancelAnimationFrame(timerRequest);
   stopBackgroundMusic(); // Stop music when timer is stopped
 
   // 🎯 DEACTIVATE SILENT FOCUS MODE AND DO NOT DISTURB
@@ -1243,30 +1203,17 @@ const soundToggleIcon = document.querySelector(".sound-toggle-icon");
 function toggleSound() {
   isMusicEnabled = !isMusicEnabled;
   const img = soundToggleIcon.querySelector("img");
-
-  // Add switching class for animation
-  soundToggleIcon.classList.add("switching");
-
-  setTimeout(() => {
-    if (isMusicEnabled) {
-      img.src = "assets/svg/sound.svg";
-      img.alt = "Mute Sound";
-      // Resume music if timer is running and not paused
-      if (timerInterval && !isPaused) {
-        playBackgroundMusic();
-      }
-    } else {
-      img.src = "assets/svg/mute.svg";
-      img.alt = "Unmute Sound";
-      pauseBackgroundMusic();
+  if (isMusicEnabled) {
+    img.src = "assets/svg/sound.svg";
+    img.alt = "Mute";
+    if (!isPaused && timerOverlay.classList.contains("visible")) {
+      playBackgroundMusic();
     }
-
-    // Remove switching class to animate back in
-    soundToggleIcon.classList.remove("switching");
-  }, 150); // Half of the transition duration
-
-  // Save sound preference
-  localStorage.setItem("isMusicEnabled", isMusicEnabled);
+  } else {
+    img.src = "assets/svg/mute.svg";
+    img.alt = "Unmute";
+    pauseBackgroundMusic();
+  }
 }
 
 // Load sound preference
@@ -1579,3 +1526,43 @@ document.addEventListener("keydown", (e) => {
     stopTimer();
   }
 });
+
+function updateTimer(currentTime) {
+  if (isPaused) return;
+
+  if (!lastFrameTime) {
+    lastFrameTime = currentTime;
+  }
+
+  const deltaTime = currentTime - lastFrameTime;
+
+  if (deltaTime >= 1000) {
+    remainingTime--;
+    const hours = Math.floor(remainingTime / 3600);
+    const minutes = Math.floor((remainingTime % 3600) / 60);
+    const seconds = remainingTime % 60;
+
+    const newTimeText = `${String(hours).padStart(2, "0")}:${String(
+      minutes
+    ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    animateTimeChange(newTimeText);
+
+    lastFrameTime = currentTime - (deltaTime % 1000);
+
+    if (remainingTime <= 0) {
+      if (!isBreak) {
+        const checkbox = currentTimerLi.querySelector('input[type="checkbox"]');
+        checkbox.checked = true;
+        toggleTodoCompleted(checkbox);
+        completedTasks++;
+        startBreak();
+      } else {
+        startNextTask();
+      }
+      return; // Stop the loop
+    }
+  }
+
+  timerRequest = requestAnimationFrame(updateTimer);
+}
