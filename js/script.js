@@ -7,14 +7,7 @@ const backgroundMusic = document.getElementById("background-music");
 let isMusicEnabled = true;
 let isLocked = false;
 
-// Silent Focus Mode and Do Not Disturb variables
-let focusModeActive = false;
-let originalTitle = document.title;
-let notificationPermission = false;
-let wakeLockSentinel = null;
-let focusStartTime = null;
-let distractionCount = 0;
-let tabSwitchCount = 0;
+// Removed focus mode variables - focus mode has been disabled
 
 // Background music control functions
 function playBackgroundMusic(reset = false) {
@@ -71,341 +64,341 @@ if (backgroundMusic) {
   backgroundMusic.volume = 0.3;
 }
 
-// Silent Focus Mode and Do Not Disturb Functions
-async function activateSilentFocusMode() {
-  if (focusModeActive) return;
+// Focus Mode has been completely removed - it was not effective at preventing distractions
+// Timer-specific keyboard and mouse blocking remains active during timer sessions
+// Cursor hiding and notification blocking are kept for better focus experience
 
-  focusModeActive = true;
-  focusStartTime = Date.now();
-  distractionCount = 0;
-  tabSwitchCount = 0;
-
-  console.log("🎯 Silent Focus Mode Activated - Deep work session started");
-
-  // 1. Request notification permission for focus alerts
-  await requestNotificationPermission();
-
-  // 2. Activate screen wake lock to prevent screen from sleeping
-  await activateWakeLock();
-
-  // 3. Change page title for focus indication (silent)
-  document.title = "🎯 " + originalTitle;
-
-  // 4. Block distracting websites (simulate with warnings)
-  activateWebsiteBlocking();
-
-  // 5. Monitor tab visibility and focus
-  activateTabMonitoring();
-
-  // 6. Activate keyboard shortcuts blocking
-  activateKeyboardBlocking();
-
-  // 7. Hide cursor after inactivity
-  activateCursorHiding();
-
-  // 8. Activate ambient focus sounds enhancement
-  enhanceAmbientSounds();
-
-  // 9. Monitor system notifications (simulate)
-  activateNotificationBlocking();
-}
-
-async function deactivateSilentFocusMode() {
-  if (!focusModeActive) return;
-
-  focusModeActive = false;
-  const focusEndTime = Date.now();
-  const sessionDuration = Math.floor((focusEndTime - focusStartTime) / 1000);
-
-  console.log(
-    `🏁 Silent Focus Mode Deactivated - Session lasted ${Math.floor(
-      sessionDuration / 60
-    )}m ${sessionDuration % 60}s`
-  );
-
-  // Calculate focus quality score
-  const focusQuality = calculateFocusQuality(
-    sessionDuration,
-    distractionCount,
-    tabSwitchCount
-  );
-
-  // Store session data
-  storeFocusSessionData(sessionDuration, focusQuality);
-
-  // Restore normal state
-  await deactivateWakeLock();
-  document.title = originalTitle;
-  deactivateWebsiteBlocking();
-  deactivateTabMonitoring();
-  deactivateKeyboardBlocking();
-  deactivateCursorHiding();
-  deactivateAmbientSounds();
-  deactivateNotificationBlocking();
-
-  // Show focus session summary (console only)
-  showFocusSessionSummary(sessionDuration, focusQuality);
-}
-
-async function requestNotificationPermission() {
-  if ("Notification" in window) {
-    try {
-      const permission = await Notification.requestPermission();
-      notificationPermission = permission === "granted";
-      if (notificationPermission) {
-        console.log("📱 Notification permission granted for focus alerts");
-      }
-    } catch (error) {
-      console.log("Notification permission request failed:", error);
-    }
-  }
-}
-
-async function activateWakeLock() {
-  if ("wakeLock" in navigator) {
-    try {
-      wakeLockSentinel = await navigator.wakeLock.request("screen");
-      console.log(
-        "🔒 Screen wake lock activated - screen won't sleep during focus"
-      );
-
-      wakeLockSentinel.addEventListener("release", () => {
-        console.log("🔓 Screen wake lock released");
-      });
-    } catch (error) {
-      console.log("Wake lock failed:", error);
-    }
-  }
-}
-
-async function deactivateWakeLock() {
-  if (wakeLockSentinel) {
-    try {
-      await wakeLockSentinel.release();
-      wakeLockSentinel = null;
-    } catch (error) {
-      console.log("Wake lock release failed:", error);
-    }
-  }
-}
-
-function activateWebsiteBlocking() {
-  // Simulate website blocking by intercepting certain actions
-  const distractingSites = [
-    "facebook.com",
-    "twitter.com",
-    "instagram.com",
-    "youtube.com",
-    "reddit.com",
-    "tiktok.com",
-  ];
-
-  // Override window.open to block distracting sites
-  const originalWindowOpen = window.open;
-  window.open = function (url, ...args) {
-    if (url && distractingSites.some((site) => url.includes(site))) {
-      if (notificationPermission) {
-        new Notification("🚫 Focus Mode Active", {
-          body: "Distracting website blocked. Stay focused!",
-          icon: "/assets/images/logo.png",
-        });
-      }
-      distractionCount++;
-      console.log("🚫 Blocked attempt to visit distracting website:", url);
-      return null;
-    }
-    return originalWindowOpen.call(this, url, ...args);
-  };
-
-  console.log("🛡️ Website blocking activated");
-}
-
-function deactivateWebsiteBlocking() {
-  console.log("🛡️ Website blocking deactivated");
-}
-
-function activateTabMonitoring() {
-  document.addEventListener("visibilitychange", handleVisibilityChange);
-  console.log("👁️ Tab monitoring activated");
-}
-
-function deactivateTabMonitoring() {
-  document.removeEventListener("visibilitychange", handleVisibilityChange);
-}
-
-function handleVisibilityChange() {
-  if (document.hidden && focusModeActive) {
-    tabSwitchCount++;
-    console.log("👁️ Tab switch detected - focus interrupted");
-
-    if (notificationPermission && tabSwitchCount % 3 === 0) {
-      new Notification("🎯 Focus Reminder", {
-        body: `You've switched tabs ${tabSwitchCount} times. Stay focused on your task!`,
-        icon: "/assets/images/logo.png",
-      });
-    }
-  }
-}
-
-function activateKeyboardBlocking() {
-  document.addEventListener("keydown", focusKeyboardHandler, true);
-  console.log("⌨️ Distraction keyboard shortcuts blocked");
-}
-
-function deactivateKeyboardBlocking() {
-  document.removeEventListener("keydown", focusKeyboardHandler, true);
-}
-
-function focusKeyboardHandler(e) {
-  // Block common distraction shortcuts during focus mode
-  const blockedShortcuts = [
-    { ctrl: true, key: "t" }, // New tab
-    { ctrl: true, key: "n" }, // New window
-    { ctrl: true, shift: true, key: "n" }, // New incognito window
-    { alt: true, key: "Tab" }, // Alt+Tab (task switching)
-    { key: "F11" }, // Fullscreen toggle
-  ];
-
-  const isBlocked = blockedShortcuts.some((shortcut) => {
-    return (
-      (!shortcut.ctrl || e.ctrlKey) &&
-      (!shortcut.shift || e.shiftKey) &&
-      (!shortcut.alt || e.altKey) &&
-      e.key.toLowerCase() === shortcut.key.toLowerCase()
-    );
-  });
-
-  if (isBlocked) {
-    e.preventDefault();
-    e.stopPropagation();
-    distractionCount++;
-
-    if (notificationPermission && distractionCount % 5 === 0) {
-      new Notification("🎯 Stay Focused", {
-        body: "Distraction shortcut blocked. Keep your focus on the task!",
-        icon: "/assets/images/logo.png",
-      });
-    }
-
-    console.log("⌨️ Blocked distraction shortcut:", e.key);
-    return false;
-  }
-}
-
+// Cursor hiding functionality
 let cursorTimeout;
+let cursorShowHandler = null;
+
 function activateCursorHiding() {
+  // Only hide cursor on timer overlay
   const hideCursor = () => {
-    document.body.style.cursor = "none";
+    if (timerOverlay && timerOverlay.classList.contains("visible")) {
+      timerOverlay.style.cursor = "none";
+    }
   };
 
-  const showCursor = () => {
-    document.body.style.cursor = "auto";
+  cursorShowHandler = () => {
+    if (timerOverlay && timerOverlay.classList.contains("visible")) {
+      timerOverlay.style.cursor = "auto";
+    }
     clearTimeout(cursorTimeout);
     cursorTimeout = setTimeout(hideCursor, 3000); // Hide after 3 seconds of inactivity
   };
 
-  document.addEventListener("mousemove", showCursor);
+  // Listen for mouse movement on the timer overlay
+  if (timerOverlay) {
+    timerOverlay.addEventListener("mousemove", cursorShowHandler);
+  }
   cursorTimeout = setTimeout(hideCursor, 3000);
 
   console.log("🖱️ Cursor auto-hide activated");
 }
 
 function deactivateCursorHiding() {
-  document.body.style.cursor = "auto";
+  if (timerOverlay) {
+    timerOverlay.style.cursor = "auto";
+  }
   clearTimeout(cursorTimeout);
-  document.removeEventListener("mousemove", showCursor);
-}
-
-function enhanceAmbientSounds() {
-  if (backgroundMusic && isMusicEnabled) {
-    // Enhance the focus music with subtle volume adjustments
-    backgroundMusic.volume = 0.3; // Slightly higher volume for focus
-    console.log("🎵 Ambient focus sounds enhanced");
+  if (cursorShowHandler && timerOverlay) {
+    timerOverlay.removeEventListener("mousemove", cursorShowHandler);
+    cursorShowHandler = null;
   }
+  console.log("🖱️ Cursor auto-hide deactivated");
 }
 
-function deactivateAmbientSounds() {
-  if (backgroundMusic) {
-    backgroundMusic.volume = 0.2; // Return to normal volume
-  }
-}
-
+// Notification blocking functionality
 function activateNotificationBlocking() {
-  // Simulate blocking system notifications by overriding the Notification constructor
-  if ("Notification" in window) {
+  // Block system notifications by overriding the Notification constructor
+  if ("Notification" in window && !window.originalNotification) {
     window.originalNotification = window.Notification;
     window.Notification = function (...args) {
-      // Only allow our focus-related notifications
-      if (
-        args[0] &&
-        (args[0].includes("Focus") ||
-          args[0].includes("🎯") ||
-          args[0].includes("🚫"))
-      ) {
-        return new window.originalNotification(...args);
-      }
-      console.log("🔕 Blocked external notification during focus mode");
-      return { close: () => {} }; // Return dummy notification object
+      console.log("🔕 Blocked external notification during timer session");
+      return { close: () => {}, addEventListener: () => {} }; // Return dummy notification object
     };
+    // Copy static methods
+    if (window.originalNotification.requestPermission) {
+      window.Notification.requestPermission =
+        window.originalNotification.requestPermission.bind(
+          window.originalNotification
+        );
+    }
+    if (window.originalNotification.permission) {
+      window.Notification.permission = window.originalNotification.permission;
+    }
   }
-  console.log("🔕 External notifications blocked");
+  console.log("🔕 Notifications blocked during timer");
 }
 
 function deactivateNotificationBlocking() {
   if (window.originalNotification) {
     window.Notification = window.originalNotification;
     delete window.originalNotification;
+    console.log("🔕 Notifications unblocked");
   }
 }
 
-function calculateFocusQuality(duration, distractions, tabSwitches) {
-  const baseScore = 100;
-  const distractionPenalty = distractions * 5;
-  const tabSwitchPenalty = tabSwitches * 3;
-  const durationBonus = Math.min(duration / 60, 30); // Bonus for longer sessions, capped at 30 minutes
+// Timer-specific distraction blocking (independent of focus mode)
+let timerKeyboardBlockingActive = false;
+let timerMouseBlockingActive = false;
+let blockedFullscreenExit = false; // Flag to track if we blocked a fullscreen exit
+let fullscreenMonitorInterval = null; // Interval to monitor fullscreen state
 
-  const score = Math.max(
-    0,
-    Math.min(
-      100,
-      baseScore - distractionPenalty - tabSwitchPenalty + durationBonus
-    )
-  );
-  return Math.round(score);
+function activateTimerKeyboardBlocking() {
+  if (timerKeyboardBlockingActive) return;
+
+  timerKeyboardBlockingActive = true;
+  document.addEventListener("keydown", timerKeyboardHandler, true);
+  document.addEventListener("keyup", timerKeyUpHandler, true);
+
+  // Start monitoring fullscreen state
+  startFullscreenMonitoring();
+
+  console.log("⌨️ Timer keyboard blocking activated");
 }
 
-function storeFocusSessionData(duration, quality) {
-  const sessionData = {
-    date: new Date().toISOString(),
-    duration: duration,
-    quality: quality,
-    distractions: distractionCount,
-    tabSwitches: tabSwitchCount,
-  };
+function deactivateTimerKeyboardBlocking() {
+  if (!timerKeyboardBlockingActive) return;
 
-  const existingSessions = JSON.parse(
-    localStorage.getItem("focusSessions") || "[]"
-  );
-  existingSessions.push(sessionData);
+  timerKeyboardBlockingActive = false;
+  document.removeEventListener("keydown", timerKeyboardHandler, true);
+  document.removeEventListener("keyup", timerKeyUpHandler, true);
 
-  // Keep only last 50 sessions
-  if (existingSessions.length > 50) {
-    existingSessions.splice(0, existingSessions.length - 50);
+  // Stop monitoring fullscreen state
+  stopFullscreenMonitoring();
+
+  console.log("⌨️ Timer keyboard blocking deactivated");
+}
+
+function startFullscreenMonitoring() {
+  // Monitor fullscreen state every 100ms and re-enter if needed
+  if (fullscreenMonitorInterval) return;
+
+  fullscreenMonitorInterval = setInterval(() => {
+    const isTimerActive =
+      timerOverlay && timerOverlay.classList.contains("visible");
+    const isFullscreen = !!(
+      document.fullscreenElement ||
+      document.mozFullScreenElement ||
+      document.webkitFullscreenElement ||
+      document.msFullscreenElement
+    );
+
+    // If timer is active but not in fullscreen, re-enter (unless locked or paused during edit)
+    const isEditingTimer =
+      timerDisplay && timerDisplay.contentEditable === "true";
+    if (isTimerActive && !isFullscreen && !isLocked && !isEditingTimer) {
+      console.log("🔄 Fullscreen exited unexpectedly, re-entering...");
+      enterFullscreen();
+    }
+  }, 100);
+}
+
+function stopFullscreenMonitoring() {
+  if (fullscreenMonitorInterval) {
+    clearInterval(fullscreenMonitorInterval);
+    fullscreenMonitorInterval = null;
+  }
+}
+
+function timerKeyboardHandler(e) {
+  // Allow keyboard interaction on timer controls
+  const target = e.target;
+  const isTimerControl =
+    target.closest(".timer-controls") ||
+    target.closest(".edit-timer-icon") ||
+    target.closest(".pause-icon") ||
+    target.closest(".stop-icon") ||
+    target.closest(".timer-lock-toggle") ||
+    target.closest(".lock-toggle-icon") ||
+    target.closest(".timer-sound-toggle") ||
+    target.closest(".sound-toggle-icon") ||
+    target.id === "timer-display";
+
+  // Don't block keyboard shortcuts on timer controls (like Enter/Space on lock button)
+  if (isTimerControl && (e.key === "Enter" || e.key === " ")) {
+    return; // Allow these keys on timer controls
   }
 
-  localStorage.setItem("focusSessions", JSON.stringify(existingSessions));
-  console.log("💾 Focus session data stored");
+  // Allow Space (pause/resume) and M (mute) when timer is active and not locked
+  if ((e.key === " " && !isLocked) || e.key === "m" || e.key === "M") {
+    return; // Allow these functional keys
+  }
+
+  // Comprehensive list of distraction shortcuts to block during timer
+  const blockedShortcuts = [
+    // Browser shortcuts
+    { key: "F5" }, // Refresh
+    { key: "F11" }, // Fullscreen toggle
+    { key: "F12" }, // Developer tools
+    { ctrl: true, key: "t" }, // New tab
+    { ctrl: true, key: "n" }, // New window
+    { ctrl: true, shift: true, key: "n" }, // New incognito window
+    { ctrl: true, shift: true, key: "i" }, // Developer tools
+    { ctrl: true, key: "u" }, // View page source
+    { ctrl: true, key: "s" }, // Save page
+    { ctrl: true, key: "p" }, // Print
+    { ctrl: true, key: "r" }, // Refresh (alternative)
+    { ctrl: true, key: "w" }, // Close tab
+    { ctrl: true, shift: true, key: "t" }, // Reopen closed tab
+    { ctrl: true, key: "f" }, // Find
+    { ctrl: true, shift: true, key: "delete" }, // Clear browsing data
+    { alt: true, key: "F4" }, // Close window
+    { alt: true, key: "F5" }, // Refresh window
+    { alt: true, key: "Tab" }, // Task switching
+    { alt: true, key: "Escape" }, // Application menu
+
+    // System shortcuts
+    { key: "PrintScreen" }, // Screenshot
+    { alt: true, key: "PrintScreen" }, // Window screenshot
+
+    // Media keys that might interfere
+    { key: "MediaPlayPause" },
+    { key: "MediaStop" },
+    { key: "MediaTrackNext" },
+    { key: "MediaTrackPrevious" },
+  ];
+
+  const isBlocked = blockedShortcuts.some((shortcut) => {
+    const ctrlMatch = !shortcut.ctrl || e.ctrlKey;
+    const shiftMatch = !shortcut.shift || e.shiftKey;
+    const altMatch = !shortcut.alt || e.altKey;
+    const keyMatch = e.key.toLowerCase() === shortcut.key.toLowerCase();
+
+    return ctrlMatch && shiftMatch && altMatch && keyMatch;
+  });
+
+  if (isBlocked) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    // For F11 specifically, set flag and re-enter fullscreen if needed
+    if (e.key === "F11") {
+      blockedFullscreenExit = true;
+      // Re-enter fullscreen after a brief delay to counter any exit attempt
+      setTimeout(() => {
+        const isFullscreen = !!(
+          document.fullscreenElement ||
+          document.mozFullScreenElement ||
+          document.webkitFullscreenElement ||
+          document.msFullscreenElement
+        );
+
+        if (
+          !isFullscreen &&
+          timerOverlay &&
+          timerOverlay.classList.contains("visible")
+        ) {
+          enterFullscreen();
+        }
+        // Reset flag after handling
+        setTimeout(() => {
+          blockedFullscreenExit = false;
+        }, 100);
+      }, 10);
+    }
+
+    console.log("⌨️ Blocked timer distraction shortcut:", e.key);
+    return false;
+  }
 }
 
-function showFocusSessionSummary(duration, quality) {
-  // Console summary only (no UI interruption)
-  console.log(`
-🎯 FOCUS SESSION COMPLETE
-⏱️  Duration: ${Math.floor(duration / 60)}m ${duration % 60}s
-📊 Focus Quality: ${quality}%
-🚫 Distractions Blocked: ${distractionCount}
-👁️  Tab Switches: ${tabSwitchCount}
-  `);
+function timerKeyUpHandler(e) {
+  // Also block on keyup to prevent any delayed actions
+  const criticalKeys = ["F5", "F11", "F12"];
+  if (criticalKeys.includes(e.key)) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return false;
+  }
+}
+
+function activateTimerMouseBlocking() {
+  if (timerMouseBlockingActive) return;
+
+  timerMouseBlockingActive = true;
+  document.addEventListener("contextmenu", preventContextMenu, true);
+  document.addEventListener("dragstart", preventDrag, true);
+  document.addEventListener("selectstart", preventSelection, true);
+  console.log("🖱️ Timer mouse blocking activated");
+}
+
+function deactivateTimerMouseBlocking() {
+  if (!timerMouseBlockingActive) return;
+
+  timerMouseBlockingActive = false;
+  document.removeEventListener("contextmenu", preventContextMenu, true);
+  document.removeEventListener("dragstart", preventDrag, true);
+  document.removeEventListener("selectstart", preventSelection, true);
+  console.log("🖱️ Timer mouse blocking deactivated");
+}
+
+function preventContextMenu(e) {
+  // Allow context menu only on timer controls
+  const target = e.target;
+  const isTimerControl =
+    target.closest(".timer-controls") ||
+    target.closest(".edit-timer-icon") ||
+    target.closest(".pause-icon") ||
+    target.closest(".stop-icon") ||
+    target.closest(".timer-lock-toggle") ||
+    target.closest(".lock-toggle-icon") ||
+    target.closest(".timer-sound-toggle") ||
+    target.closest(".sound-toggle-icon");
+
+  if (!isTimerControl) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    console.log("🖱️ Blocked context menu");
+    return false;
+  }
+}
+
+function preventDrag(e) {
+  // Allow dragging only on timer controls
+  const target = e.target;
+  const isTimerControl =
+    target.closest(".timer-controls") ||
+    target.closest(".edit-timer-icon") ||
+    target.closest(".pause-icon") ||
+    target.closest(".stop-icon") ||
+    target.closest(".timer-lock-toggle") ||
+    target.closest(".lock-toggle-icon") ||
+    target.closest(".timer-sound-toggle") ||
+    target.closest(".sound-toggle-icon");
+
+  if (!isTimerControl) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    console.log("🖱️ Blocked drag operation");
+    return false;
+  }
+}
+
+function preventSelection(e) {
+  // Allow text selection only on timer display when editing, and allow clicks on timer controls
+  const target = e.target;
+  const isEditableTimer =
+    target.id === "timer-display" && target.contentEditable === "true";
+  const isTimerControl =
+    target.closest(".timer-controls") ||
+    target.closest(".edit-timer-icon") ||
+    target.closest(".pause-icon") ||
+    target.closest(".stop-icon") ||
+    target.closest(".timer-lock-toggle") ||
+    target.closest(".lock-toggle-icon") ||
+    target.closest(".timer-sound-toggle") ||
+    target.closest(".sound-toggle-icon");
+
+  if (!isEditableTimer && !isTimerControl) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return false;
+  }
 }
 
 // Fullscreen functionality
@@ -461,6 +454,7 @@ document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
 function handleFullscreenChange() {
   // If timer overlay is visible but we're not in fullscreen, stop the timer
+  // UNLESS we blocked the fullscreen exit (e.g., user pressed F11)
   const isTimerActive = timerOverlay.classList.contains("visible");
   const isFullscreen = !!(
     document.fullscreenElement ||
@@ -470,7 +464,16 @@ function handleFullscreenChange() {
   );
 
   if (isTimerActive && !isFullscreen) {
-    stopTimer();
+    // Check if this was a blocked fullscreen exit attempt
+    if (blockedFullscreenExit) {
+      // Don't stop the timer, re-enter fullscreen instead
+      setTimeout(() => {
+        enterFullscreen();
+      }, 50);
+    } else {
+      // Legitimate fullscreen exit (e.g., user stopped the timer)
+      stopTimer();
+    }
   }
 }
 
@@ -802,8 +805,11 @@ function startTimer(li) {
   enterFullscreen(); // Enter fullscreen when timer starts
   pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
 
-  // 🎯 ACTIVATE SILENT FOCUS MODE AND DO NOT DISTURB
-  activateSilentFocusMode();
+  // 🔒 ACTIVATE TIMER-SPECIFIC BLOCKING
+  activateTimerKeyboardBlocking();
+  activateTimerMouseBlocking();
+  activateCursorHiding();
+  activateNotificationBlocking();
 
   // Display initial time without animation
   const hours = Math.floor(remainingTime / 3600);
@@ -930,8 +936,11 @@ function stopTimer() {
   cancelAnimationFrame(timerRequest);
   stopBackgroundMusic(); // Stop music when timer is stopped
 
-  // 🎯 DEACTIVATE SILENT FOCUS MODE AND DO NOT DISTURB
-  deactivateSilentFocusMode();
+  // 🔒 DEACTIVATE TIMER-SPECIFIC BLOCKING
+  deactivateTimerKeyboardBlocking();
+  deactivateTimerMouseBlocking();
+  deactivateCursorHiding();
+  deactivateNotificationBlocking();
 
   hideTimer();
 }
@@ -942,10 +951,15 @@ function hideTimer() {
   timerTaskTitle.textContent = "";
   stopBackgroundMusic(); // Stop music when timer is hidden
 
-  // 🎯 DEACTIVATE FOCUS MODE IF STILL ACTIVE
-  if (focusModeActive) {
-    deactivateSilentFocusMode();
+  // 🔒 DEACTIVATE TIMER-SPECIFIC BLOCKING IF STILL ACTIVE
+  if (timerKeyboardBlockingActive) {
+    deactivateTimerKeyboardBlocking();
   }
+  if (timerMouseBlockingActive) {
+    deactivateTimerMouseBlocking();
+  }
+  deactivateCursorHiding();
+  deactivateNotificationBlocking();
 }
 
 // Timer editing functionality
@@ -1104,8 +1118,8 @@ function toggleTimerEdit() {
     }
   } else {
     // Auto-pause timer if it's running
-    if (!isPaused && timerInterval) {
-      clearInterval(timerInterval);
+    if (!isPaused && timerRequest) {
+      cancelAnimationFrame(timerRequest);
       isPaused = true;
       pauseResumeIcon.querySelector("img").src = "assets/svg/play.svg";
       pauseBackgroundMusic(); // Pause music during editing
@@ -1512,18 +1526,40 @@ sessionsInput.addEventListener("input", (e) => {
 
 // Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
-  // Stop timer when Escape key is pressed (but not during edit operations or when locked)
   const isEditingTodo = document.querySelector(".todo-item.editing");
-  const isEditingTimer = timerDisplay.contentEditable === "true";
+  const isEditingTimer =
+    timerDisplay && timerDisplay.contentEditable === "true";
+  const isTimerActive =
+    timerOverlay && timerOverlay.classList.contains("visible");
 
+  // Don't handle shortcuts if editing or if focus is on an input element
   if (
-    e.key === "Escape" &&
-    timerInterval &&
-    !isEditingTodo &&
-    !isEditingTimer &&
-    !isLocked
+    isEditingTodo ||
+    isEditingTimer ||
+    (e.target.tagName === "INPUT" && e.target.type !== "checkbox")
   ) {
+    return;
+  }
+
+  // Space bar: Pause/Resume timer (when unlocked and timer is active)
+  if (e.key === " " && isTimerActive && !isLocked) {
+    e.preventDefault();
+    togglePauseResume();
+    return;
+  }
+
+  // M key: Toggle mute/unmute (when timer is active)
+  if ((e.key === "m" || e.key === "M") && isTimerActive) {
+    e.preventDefault();
+    toggleSound();
+    return;
+  }
+
+  // Escape key: Stop timer (when unlocked and timer is active)
+  if (e.key === "Escape" && isTimerActive && !isLocked) {
+    e.preventDefault();
     stopTimer();
+    return;
   }
 });
 
