@@ -7,6 +7,15 @@ const backgroundMusic = document.getElementById("background-music");
 let isMusicEnabled = true;
 let isLocked = false;
 
+// Silent Focus Mode and Do Not Disturb variables
+let focusModeActive = false;
+let originalTitle = document.title;
+let notificationPermission = false;
+let wakeLockSentinel = null;
+let focusStartTime = null;
+let distractionCount = 0;
+let tabSwitchCount = 0;
+
 // Background music control functions
 function playBackgroundMusic(reset = false) {
   if (isMusicEnabled && backgroundMusic) {
@@ -60,6 +69,313 @@ function stopBackgroundMusic() {
 // Set volume to a reasonable level (30%)
 if (backgroundMusic) {
   backgroundMusic.volume = 0.3;
+}
+
+// Silent Focus Mode and Do Not Disturb Functions
+async function activateSilentFocusMode() {
+  if (focusModeActive) return;
+
+  focusModeActive = true;
+  focusStartTime = Date.now();
+  distractionCount = 0;
+  tabSwitchCount = 0;
+
+  console.log("🎯 Silent Focus Mode Activated - Deep work session started");
+
+  // 1. Request notification permission for focus alerts
+  await requestNotificationPermission();
+
+  // 2. Activate screen wake lock to prevent screen from sleeping
+  await activateWakeLock();
+
+  // 3. Change page title for focus indication (silent)
+  document.title = "🎯 " + originalTitle;
+
+  // 4. Block distracting websites (simulate with warnings)
+  activateWebsiteBlocking();
+
+  // 5. Monitor tab visibility and focus
+  activateTabMonitoring();
+
+  // 6. Activate keyboard shortcuts blocking
+  activateKeyboardBlocking();
+
+  // 7. Hide cursor after inactivity
+  activateCursorHiding();
+
+  // 8. Activate ambient focus sounds enhancement
+  enhanceAmbientSounds();
+
+  // 9. Monitor system notifications (simulate)
+  activateNotificationBlocking();
+}
+
+async function deactivateSilentFocusMode() {
+  if (!focusModeActive) return;
+
+  focusModeActive = false;
+  const focusEndTime = Date.now();
+  const sessionDuration = Math.floor((focusEndTime - focusStartTime) / 1000);
+
+  console.log(`🏁 Silent Focus Mode Deactivated - Session lasted ${Math.floor(sessionDuration / 60)}m ${sessionDuration % 60}s`);
+
+  // Calculate focus quality score
+  const focusQuality = calculateFocusQuality(sessionDuration, distractionCount, tabSwitchCount);
+
+  // Store session data
+  storeFocusSessionData(sessionDuration, focusQuality);
+
+  // Restore normal state
+  await deactivateWakeLock();
+  document.title = originalTitle;
+  deactivateWebsiteBlocking();
+  deactivateTabMonitoring();
+  deactivateKeyboardBlocking();
+  deactivateCursorHiding();
+  deactivateAmbientSounds();
+  deactivateNotificationBlocking();
+
+  // Show focus session summary (console only)
+  showFocusSessionSummary(sessionDuration, focusQuality);
+}
+
+async function requestNotificationPermission() {
+  if ("Notification" in window) {
+    try {
+      const permission = await Notification.requestPermission();
+      notificationPermission = permission === "granted";
+      if (notificationPermission) {
+        console.log("📱 Notification permission granted for focus alerts");
+      }
+    } catch (error) {
+      console.log("Notification permission request failed:", error);
+    }
+  }
+}
+
+async function activateWakeLock() {
+  if ("wakeLock" in navigator) {
+    try {
+      wakeLockSentinel = await navigator.wakeLock.request("screen");
+      console.log("🔒 Screen wake lock activated - screen won't sleep during focus");
+
+      wakeLockSentinel.addEventListener("release", () => {
+        console.log("🔓 Screen wake lock released");
+      });
+    } catch (error) {
+      console.log("Wake lock failed:", error);
+    }
+  }
+}
+
+async function deactivateWakeLock() {
+  if (wakeLockSentinel) {
+    try {
+      await wakeLockSentinel.release();
+      wakeLockSentinel = null;
+    } catch (error) {
+      console.log("Wake lock release failed:", error);
+    }
+  }
+}
+
+function activateWebsiteBlocking() {
+  // Simulate website blocking by intercepting certain actions
+  const distractingSites = ['facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'reddit.com', 'tiktok.com'];
+
+  // Override window.open to block distracting sites
+  const originalWindowOpen = window.open;
+  window.open = function(url, ...args) {
+    if (url && distractingSites.some(site => url.includes(site))) {
+      if (notificationPermission) {
+        new Notification("🚫 Focus Mode Active", {
+          body: "Distracting website blocked. Stay focused!",
+          icon: "/assets/images/logo.png"
+        });
+      }
+      distractionCount++;
+      console.log("🚫 Blocked attempt to visit distracting website:", url);
+      return null;
+    }
+    return originalWindowOpen.call(this, url, ...args);
+  };
+
+  console.log("🛡️ Website blocking activated");
+}
+
+function deactivateWebsiteBlocking() {
+  console.log("🛡️ Website blocking deactivated");
+}
+
+function activateTabMonitoring() {
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  console.log("👁️ Tab monitoring activated");
+}
+
+function deactivateTabMonitoring() {
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
+}
+
+function handleVisibilityChange() {
+  if (document.hidden && focusModeActive) {
+    tabSwitchCount++;
+    console.log("👁️ Tab switch detected - focus interrupted");
+
+    if (notificationPermission && tabSwitchCount % 3 === 0) {
+      new Notification("🎯 Focus Reminder", {
+        body: `You've switched tabs ${tabSwitchCount} times. Stay focused on your task!`,
+        icon: "/assets/images/logo.png"
+      });
+    }
+  }
+}
+
+function activateKeyboardBlocking() {
+  document.addEventListener("keydown", focusKeyboardHandler, true);
+  console.log("⌨️ Distraction keyboard shortcuts blocked");
+}
+
+function deactivateKeyboardBlocking() {
+  document.removeEventListener("keydown", focusKeyboardHandler, true);
+}
+
+function focusKeyboardHandler(e) {
+  // Block common distraction shortcuts during focus mode
+  const blockedShortcuts = [
+    { ctrl: true, key: 't' }, // New tab
+    { ctrl: true, key: 'n' }, // New window
+    { ctrl: true, shift: true, key: 'n' }, // New incognito window
+    { alt: true, key: 'Tab' }, // Alt+Tab (task switching)
+    { key: 'F11' }, // Fullscreen toggle
+  ];
+
+  const isBlocked = blockedShortcuts.some(shortcut => {
+    return (
+      (!shortcut.ctrl || e.ctrlKey) &&
+      (!shortcut.shift || e.shiftKey) &&
+      (!shortcut.alt || e.altKey) &&
+      e.key.toLowerCase() === shortcut.key.toLowerCase()
+    );
+  });
+
+  if (isBlocked) {
+    e.preventDefault();
+    e.stopPropagation();
+    distractionCount++;
+
+    if (notificationPermission && distractionCount % 5 === 0) {
+      new Notification("🎯 Stay Focused", {
+        body: "Distraction shortcut blocked. Keep your focus on the task!",
+        icon: "/assets/images/logo.png"
+      });
+    }
+
+    console.log("⌨️ Blocked distraction shortcut:", e.key);
+    return false;
+  }
+}
+
+let cursorTimeout;
+function activateCursorHiding() {
+  const hideCursor = () => {
+    document.body.style.cursor = 'none';
+  };
+
+  const showCursor = () => {
+    document.body.style.cursor = 'auto';
+    clearTimeout(cursorTimeout);
+    cursorTimeout = setTimeout(hideCursor, 3000); // Hide after 3 seconds of inactivity
+  };
+
+  document.addEventListener('mousemove', showCursor);
+  cursorTimeout = setTimeout(hideCursor, 3000);
+
+  console.log("🖱️ Cursor auto-hide activated");
+}
+
+function deactivateCursorHiding() {
+  document.body.style.cursor = 'auto';
+  clearTimeout(cursorTimeout);
+  document.removeEventListener('mousemove', showCursor);
+}
+
+function enhanceAmbientSounds() {
+  if (backgroundMusic && isMusicEnabled) {
+    // Enhance the focus music with subtle volume adjustments
+    backgroundMusic.volume = 0.4; // Slightly higher volume for focus
+    console.log("🎵 Ambient focus sounds enhanced");
+  }
+}
+
+function deactivateAmbientSounds() {
+  if (backgroundMusic) {
+    backgroundMusic.volume = 0.3; // Return to normal volume
+  }
+}
+
+function activateNotificationBlocking() {
+  // Simulate blocking system notifications by overriding the Notification constructor
+  if ("Notification" in window) {
+    window.originalNotification = window.Notification;
+    window.Notification = function(...args) {
+      // Only allow our focus-related notifications
+      if (args[0] && (args[0].includes("Focus") || args[0].includes("🎯") || args[0].includes("🚫"))) {
+        return new window.originalNotification(...args);
+      }
+      console.log("🔕 Blocked external notification during focus mode");
+      return { close: () => {} }; // Return dummy notification object
+    };
+  }
+  console.log("🔕 External notifications blocked");
+}
+
+function deactivateNotificationBlocking() {
+  if (window.originalNotification) {
+    window.Notification = window.originalNotification;
+    delete window.originalNotification;
+  }
+}
+
+function calculateFocusQuality(duration, distractions, tabSwitches) {
+  const baseScore = 100;
+  const distractionPenalty = distractions * 5;
+  const tabSwitchPenalty = tabSwitches * 3;
+  const durationBonus = Math.min(duration / 60, 30); // Bonus for longer sessions, capped at 30 minutes
+
+  const score = Math.max(0, Math.min(100, baseScore - distractionPenalty - tabSwitchPenalty + durationBonus));
+  return Math.round(score);
+}
+
+function storeFocusSessionData(duration, quality) {
+  const sessionData = {
+    date: new Date().toISOString(),
+    duration: duration,
+    quality: quality,
+    distractions: distractionCount,
+    tabSwitches: tabSwitchCount
+  };
+
+  const existingSessions = JSON.parse(localStorage.getItem('focusSessions') || '[]');
+  existingSessions.push(sessionData);
+
+  // Keep only last 50 sessions
+  if (existingSessions.length > 50) {
+    existingSessions.splice(0, existingSessions.length - 50);
+  }
+
+  localStorage.setItem('focusSessions', JSON.stringify(existingSessions));
+  console.log("💾 Focus session data stored");
+}
+
+function showFocusSessionSummary(duration, quality) {
+  // Console summary only (no UI interruption)
+  console.log(`
+🎯 FOCUS SESSION COMPLETE
+⏱️  Duration: ${Math.floor(duration / 60)}m ${duration % 60}s
+📊 Focus Quality: ${quality}%
+🚫 Distractions Blocked: ${distractionCount}
+👁️  Tab Switches: ${tabSwitchCount}
+  `);
 }
 
 // Fullscreen functionality
@@ -455,6 +771,9 @@ function startTimer(li) {
   enterFullscreen(); // Enter fullscreen when timer starts
   pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
 
+  // 🎯 ACTIVATE SILENT FOCUS MODE AND DO NOT DISTURB
+  activateSilentFocusMode();
+
   // Display initial time without animation
   const hours = Math.floor(remainingTime / 3600);
   const minutes = Math.floor((remainingTime % 3600) / 60);
@@ -650,6 +969,10 @@ function stopTimer() {
 
   clearInterval(timerInterval);
   stopBackgroundMusic(); // Stop music when timer is stopped
+
+  // 🎯 DEACTIVATE SILENT FOCUS MODE AND DO NOT DISTURB
+  deactivateSilentFocusMode();
+
   hideTimer();
 }
 
@@ -658,6 +981,11 @@ function hideTimer() {
   exitFullscreen(); // Exit fullscreen when timer is hidden
   timerTaskTitle.textContent = "";
   stopBackgroundMusic(); // Stop music when timer is hidden
+
+  // 🎯 DEACTIVATE FOCUS MODE IF STILL ACTIVE
+  if (focusModeActive) {
+    deactivateSilentFocusMode();
+  }
 }
 
 // Timer editing functionality
@@ -723,10 +1051,10 @@ function toggleTimerEdit() {
 
       // Show error message
       timerDisplay.textContent = errorMessage;
-      timerDisplay.style.color = "#ff4757";
+      timerDisplay.style.color = "hsl(348, 100%, 61%)";
       timerDisplay.style.fontSize = "1.2rem";
       timerDisplay.style.fontWeight = "500";
-      timerDisplay.style.textShadow = "0 2px 4px rgba(255, 71, 87, 0.3)";
+      timerDisplay.style.textShadow = "0 2px 4px hsla(348, 100%, 61%, 0.3)";
 
       // Add subtle shake animation
       timerDisplay.style.animation = "errorShake 0.5s ease-in-out";
@@ -1126,14 +1454,14 @@ saveSettingsButton.addEventListener("click", () => {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(255, 71, 87, 0.95);
-      color: white;
+      background: hsla(348, 100%, 61%, 0.95);
+      color: hsl(0, 0%, 100%);
       padding: 20px 30px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 500;
       text-align: center;
-      box-shadow: 0 8px 32px rgba(255, 71, 87, 0.3);
+      box-shadow: 0 8px 32px hsla(348, 100%, 61%, 0.3);
       z-index: 10000;
       animation: errorShake 0.5s ease-in-out;
       backdrop-filter: blur(10px);
