@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap);:root{--font-family:"Poppins", sans-serif;--bg-color:hsl(0, 0%, 88%);--shadow-dark:hsl(0, 0%, 76%);--shadow-light:hsl(0, 0%, 95%);--text-color:hsl(0, 0%, 20%);--text-light:hsl(0, 0%, 60%);--radius-large:32px;--radius-medium:16px;--switch-bg-light:hsl(240, 6%, 87%);--switch-bg-dark:hsl(240, 4%, 29%);--sun-color:linear-gradient(
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap);:root{--font-family:"Poppins", sans-serif;--bg-color:hsl(0, 0%, 88%);--shadow-dark:hsl(0, 0%, 76%);--shadow-light:hsl(0, 0%, 95%);--text-color:hsl(0, 0%, 20%);--text-light:hsl(0, 0%, 40%);--radius-large:32px;--radius-medium:16px;--switch-bg-light:hsl(240, 6%, 87%);--switch-bg-dark:hsl(240, 4%, 29%);--sun-color:linear-gradient(
     40deg,
     hsl(330, 100%, 50%),
     hsl(33, 100%, 50%) 70%

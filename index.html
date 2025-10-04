@@ -4,6 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Cache Control for efficient loading (1 year) -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000" />
+    <meta http-equiv="Expires" content="31536000" />
+
+    <!-- Theme Color for splash screen and browser UI -->
+    <meta name="theme-color" content="#667eea" />
+    <meta
+      name="theme-color"
+      content="#667eea"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#1a1a1a"
+      media="(prefers-color-scheme: dark)"
+    />
+
     <!-- SEO Meta Tags -->
     <title>
       TodoPomo - Free Pomodoro Timer Online with Todo List | Focus &
@@ -121,6 +138,11 @@
       sizes="512x512"
     />
     <link rel="manifest" href="assets/site.webmanifest" />
+
+    <!-- Preconnect for faster external resource loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 
     <link rel="stylesheet" href="css/style.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
