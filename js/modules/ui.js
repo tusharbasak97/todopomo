@@ -140,8 +140,30 @@ class UIManager {
     this.resetTrigger.addEventListener("change", () => {
       if (this.resetTrigger.checked) {
         setTimeout(() => {
+          // Clear storage
           storage.clear();
-          window.location.reload();
+
+          // Reset todos without reload
+          const todoList = document.getElementById("todo-list");
+          if (todoList) {
+            todoList.innerHTML = "";
+          }
+
+          // Add default mock todos
+          if (window.__todopomo && window.__todopomo.todoManager) {
+            const mockTodos = [
+              { text: "Task 1", completed: false },
+              { text: "Task 2", completed: false },
+              { text: "Task 3", completed: false },
+            ];
+            mockTodos.forEach((todo) =>
+              window.__todopomo.todoManager.add(todo.text, todo.completed)
+            );
+            window.__todopomo.todoManager.save();
+          }
+
+          // Uncheck reset trigger
+          this.resetTrigger.checked = false;
         }, 2000);
       }
     });
