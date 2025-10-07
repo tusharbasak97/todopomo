@@ -27,6 +27,7 @@ class TimerManager {
     this.editTimerIcon = null;
     this.pauseResumeIcon = null;
     this.stopIcon = null;
+    this.timerInputHelper = null;
 
     // Settings
     const savedSettings = storage.getPomodoroSettings();
@@ -47,6 +48,7 @@ class TimerManager {
     this.editTimerIcon = elements.editTimerIcon;
     this.pauseResumeIcon = elements.pauseResumeIcon;
     this.stopIcon = elements.stopIcon;
+    this.timerInputHelper = document.getElementById("timer-input-helper");
 
     // Setup blocking manager
     blockingManager.setElements(this.timerOverlay, this.timerDisplay);
@@ -73,6 +75,10 @@ class TimerManager {
   }
 
   setupTimerDisplayListeners() {
+    // Add inputmode attribute for mobile numeric keyboard
+    this.timerDisplay.setAttribute("inputmode", "numeric");
+    this.timerDisplay.setAttribute("pattern", "[0-9:]*");
+
     // Handle Enter key to save when editing timer
     this.timerDisplay.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {

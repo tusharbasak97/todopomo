@@ -144,8 +144,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 
-    <link rel="stylesheet" href="css/style.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
 
     <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">
@@ -189,6 +189,11 @@
     <script src="js/main.js" type="module"></script>
   </head>
   <body>
+    <!-- CSS-only Debossed Logo -->
+    <div class="logo-container">
+      <div class="logo-text">TodoPomo</div>
+    </div>
+
     <div class="content-container">
       <div class="checkbox-wrapper-54">
         <label class="switch">
@@ -278,6 +283,13 @@
         </div>
       </div>
       <div id="timer-task-title"></div>
+      <input
+        type="text"
+        id="timer-input-helper"
+        inputmode="numeric"
+        pattern="[0-9:]*"
+        style="position: absolute; opacity: 0; pointer-events: none"
+      />
       <div id="timer-display" contenteditable="false">
         <span class="timer-digit" data-position="0">0</span>
         <span class="timer-digit" data-position="1">0</span>

@@ -9,12 +9,10 @@
   --text-light: hsl(0, 0%, 40%);
   --radius-large: 32px;
   --radius-medium: 16px;
-  --switch-bg-light: hsl(240, 6%, 87%);
-  --switch-bg-dark: hsl(240, 4%, 29%);
+  --logo-bg: hsl(0, 0%, 80%);
   --sun-color: linear-gradient(
     40deg,
-    hsl(330, 100%, 50%),
-    hsl(33, 100%, 50%) 70%
+    hsl(330, 100%, 50%) hsl(33, 100%, 50%) 70%
   );
   --moon-shadow: inset -3px -2px 5px -2px hsl(243, 80%, 71%),
     inset -10px -4px 0 0 hsl(202, 89%, 85%);
@@ -27,6 +25,7 @@
   --shadow-light: hsl(0, 0%, 25%);
   --text-color: hsl(0, 0%, 90%);
   --text-light: hsl(0, 0%, 70%);
+  --logo-bg: hsl(0, 0%, 28%);
 }
 
 * {
@@ -58,6 +57,19 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.logo-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.logo-text {
+  font-size: 38px;
+  font-weight: bold;
+  color: var(--logo-bg);
+  text-shadow: 1px 1px 1px var(--shadow-light), -1px -1px 1px var(--shadow-dark);
 }
 
 .content-container {
@@ -117,6 +129,16 @@ body {
 .todo-item.completed label {
   text-decoration: line-through;
   color: var(--text-light);
+  animation: strikethrough 0.5s ease-out forwards;
+}
+
+@keyframes strikethrough {
+  0% {
+    text-decoration-color: transparent;
+  }
+  100% {
+    text-decoration-color: var(--text-light);
+  }
 }
 
 .todo-item.completed .todo-actions {
@@ -324,19 +346,23 @@ input[type="number"] {
   bottom: 20px;
   text-align: center;
   width: 100%;
-  color: var(--text-light);
+  color: var(--logo-bg);
   font-size: 14px;
   font-weight: 400;
+  text-shadow: 1px 1px 1px var(--shadow-light), -1px -1px 1px var(--shadow-dark);
 }
 
 .designer-link {
-  color: var(--text-color);
+  color: var(--logo-bg);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  text-shadow: 1px 1px 1px var(--shadow-light), -1px -1px 1px var(--shadow-dark);
 }
 
 .designer-link:hover {
+  color: var(--text-light);
   text-decoration: underline;
+  text-shadow: 1px 1px 1px var(--shadow-light), -1px -1px 1px var(--shadow-dark);
 }
 
 @keyframes fadeIn {
