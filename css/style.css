@@ -61,8 +61,8 @@ body {
 
 .logo-container {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 15px;
+  left: 15px;
 }
 
 .logo-text {
@@ -75,6 +75,7 @@ body {
 .content-container {
   max-width: 700px;
   padding: 20px;
+  z-index: 10;
 }
 
 .todo-list-container {
@@ -84,6 +85,8 @@ body {
   box-shadow: 10px 10px 20px var(--shadow-dark),
     -10px -10px 20px var(--shadow-light), inset -6px -6px 6px var(--shadow-dark),
     inset 6px 6px 6px var(--shadow-light);
+  position: relative;
+  z-index: 10;
 }
 
 .todo-list-container h2 {
@@ -350,6 +353,7 @@ input[type="number"] {
   font-size: 14px;
   font-weight: 400;
   text-shadow: 1px 1px 1px var(--shadow-light), -1px -1px 1px var(--shadow-dark);
+  z-index: 10;
 }
 
 .designer-link {
@@ -617,25 +621,25 @@ input[type="number"] {
   object-fit: contain;
 }
 
-.checkbox-wrapper-54 {
+.dark-mode-toggle-wrapper {
   position: absolute;
   top: 26px;
   right: 20px;
 }
 
-.checkbox-wrapper-54 input[type="checkbox"] {
+.dark-mode-toggle-wrapper input[type="checkbox"] {
   visibility: hidden;
   display: none;
 }
 
-.checkbox-wrapper-54 *,
-.checkbox-wrapper-54 ::after,
-.checkbox-wrapper-54 ::before {
+.dark-mode-toggle-wrapper *,
+.dark-mode-toggle-wrapper ::after,
+.dark-mode-toggle-wrapper ::before {
   box-sizing: border-box;
 }
 
 /* The switch - the box around the slider */
-.checkbox-wrapper-54 .switch {
+.dark-mode-toggle-wrapper .switch {
   --width-of-switch: 3.5em;
   --height-of-switch: 2em;
   /* size of sliding icon -- sun and moon */
@@ -654,17 +658,17 @@ input[type="number"] {
 }
 
 /* Focus styles for accessibility */
-.checkbox-wrapper-54 .switch:focus {
+.dark-mode-toggle-wrapper .switch:focus {
   outline: 2px solid var(--text-color);
   outline-offset: 2px;
 }
 
-.checkbox-wrapper-54 .switch:hover {
+.dark-mode-toggle-wrapper .switch:hover {
   box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
 }
 
 /* The slider */
-.checkbox-wrapper-54 .slider {
+.dark-mode-toggle-wrapper .slider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -676,7 +680,7 @@ input[type="number"] {
   border-radius: 30px;
 }
 
-.checkbox-wrapper-54 .slider:before {
+.dark-mode-toggle-wrapper .slider:before {
   position: absolute;
   content: "";
   height: var(--size-of-icon, 1.4em);
@@ -693,11 +697,11 @@ input[type="number"] {
   transition: 0.4s;
 }
 
-.checkbox-wrapper-54 input:checked + .slider {
+.dark-mode-toggle-wrapper input:checked + .slider {
   background-color: var(--bg-color);
 }
 
-.checkbox-wrapper-54 input:checked + .slider:before {
+.dark-mode-toggle-wrapper input:checked + .slider:before {
   left: calc(100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em)));
   background: var(--bg-color);
   /* change the value of second inset in box-shadow to change the angle and direction of the moon  */
@@ -735,8 +739,10 @@ input[type="number"] {
   padding: 10px;
   border-radius: var(--radius-medium);
   cursor: pointer;
-  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-  transition: box-shadow 0.2s ease-in-out;
+  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light),
+    inset -3px -3px 3px var(--shadow-dark),
+    inset 3px 3px 3px var(--shadow-light);
+  transition: all 0.2s ease-in-out;
 }
 
 #settings-button img {
@@ -815,7 +821,7 @@ input[type="number"] {
   right: 50px;
   width: var(--size);
   height: var(--size);
-  z-index: 100;
+  z-index: 5;
 }
 
 .dot,
@@ -828,12 +834,14 @@ input[type="number"] {
   width: var(--size);
   margin: 10px;
   background: var(--gray);
-  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light),
+    inset -3px -3px 3px var(--shadow-dark),
+    inset 3px 3px 3px var(--shadow-light);
   border-radius: 50%;
 }
 
 .trigger {
-  z-index: 3;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -842,7 +850,7 @@ input[type="number"] {
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
-  transition: box-shadow 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .trigger:hover {
@@ -867,16 +875,17 @@ input[type="number"] {
 .dot {
   opacity: 1;
   transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
+  z-index: 1;
 }
 
 .dot:nth-of-type(2) {
-  z-index: 1;
   animation-delay: 0.5s;
+  z-index: 1;
 }
 
 .dot:nth-of-type(3) {
-  z-index: 2;
   animation-delay: 1s;
+  z-index: 1;
 }
 
 @keyframes wave {
@@ -892,22 +901,6 @@ input[type="number"] {
 }
 
 /* Settings Panel */
-#settings-button {
-  background: var(--bg-color);
-  border: none;
-  color: var(--text-color);
-  padding: 10px 15px;
-  border-radius: var(--radius-medium);
-  cursor: pointer;
-  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-  transition: box-shadow 0.2s ease-in-out;
-  margin-left: 10px;
-}
-
-#settings-button:hover {
-  box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
-}
-
 #settings-panel {
   text-align: center;
 }
@@ -965,8 +958,11 @@ input[type="number"] {
   color: var(--text-color);
   border-radius: var(--radius-medium);
   cursor: pointer;
-  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-  transition: box-shadow 0.2s ease-in-out;
+  font-weight: 600;
+  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light),
+    inset -3px -3px 3px var(--shadow-dark),
+    inset 3px 3px 3px var(--shadow-light);
+  transition: all 0.2s ease-in-out;
 }
 
 .settings-buttons button:hover {
@@ -1030,7 +1026,7 @@ input[type="number"] {
     text-align: center;
     font-size: 18px;
     font-weight: 600;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
     z-index: 9999;
     max-width: 300px;
   }
@@ -1098,23 +1094,26 @@ input[type="number"] {
   font-weight: 600;
 }
 
-/* PWA Install Banner */
+/* PWA Install Banner - Neumorphic Style */
 .install-banner {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, hsl(230, 73%, 58%) 0%, hsl(260, 47%, 47%) 100%);
-  color: white;
-  padding: 15px 25px;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: var(--bg-color);
+  color: var(--text-color);
+  padding: 20px 30px;
+  border-radius: var(--radius-medium);
+  box-shadow: 8px 8px 16px var(--shadow-dark),
+    -8px -8px 16px var(--shadow-light);
   z-index: 10000;
   display: flex;
   align-items: center;
-  gap: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  animation: slideDown 0.3s ease-out;
+  gap: 20px;
+  font-family: var(--font-family);
+  animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 500px;
+  width: 90%;
 }
 
 .install-banner-content {
@@ -1125,43 +1124,68 @@ input[type="number"] {
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 4px;
+  color: var(--text-color);
 }
 
 .install-banner-subtitle {
   font-size: 13px;
-  opacity: 0.9;
+  color: var(--text-light);
 }
 
-.install-btn {
-  background: white;
-  color: hsl(230, 73%, 58%);
+.install-btn,
+.dismiss-btn {
+  background: var(--bg-color);
+  color: var(--text-color);
   border: none;
-  padding: 8px 20px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;
-  transition: transform 0.2s;
+  font-family: var(--font-family);
+  transition: all 0.2s ease-in-out;
+  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light),
+    inset -3px -3px 3px var(--shadow-dark),
+    inset 3px 3px 3px var(--shadow-light);
 }
 
-.dismiss-btn {
-  background: transparent;
-  color: white;
-  border: 1px solid hsla(0, 0%, 100%, 0.5);
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
+.install-btn:hover,
+.dismiss-btn:hover {
+  box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+}
+
+.install-btn:active,
+.dismiss-btn:active {
+  box-shadow: inset 2px 2px 4px var(--shadow-dark),
+    inset -2px -2px 4px var(--shadow-light);
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(-50%) translateY(-30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .install-banner {
+    flex-direction: column;
+    gap: 15px;
+    padding: 18px 20px;
+    width: calc(100% - 40px);
+  }
+
+  .install-banner-content {
+    text-align: center;
+  }
+
+  .install-btn,
+  .dismiss-btn {
+    width: 100%;
   }
 }

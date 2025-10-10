@@ -146,6 +146,7 @@ class TodoManager {
       input.remove();
       item.classList.remove("editing");
       icon.querySelector("img").src = "assets/svg/edit.svg";
+      icon.querySelector("img").alt = "Edit";
       icon.classList.remove("save-icon");
       icon.classList.add("edit-icon");
       this.save();
@@ -175,6 +176,7 @@ class TodoManager {
 
       item.classList.add("editing");
       icon.querySelector("img").src = "assets/svg/save.svg";
+      icon.querySelector("img").alt = "Save";
       icon.classList.remove("edit-icon");
       icon.classList.add("save-icon");
     }

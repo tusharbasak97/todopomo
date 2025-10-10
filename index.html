@@ -195,19 +195,32 @@
     </div>
 
     <div class="content-container">
-      <div class="checkbox-wrapper-54">
-        <label class="switch">
-          <input type="checkbox" id="dark-mode-toggle" />
+      <div class="dark-mode-toggle-wrapper">
+        <label class="switch" aria-label="Toggle dark mode">
+          <input
+            type="checkbox"
+            id="dark-mode-toggle"
+            aria-label="Dark mode toggle"
+          />
           <span class="slider"></span>
         </label>
       </div>
-      <button id="settings-button">
+      <button id="settings-button" aria-label="Open settings">
         <img src="assets/svg/settings.svg" alt="Settings" />
       </button>
       <!-- Reset Button with Wave Animation -->
       <div class="reset-container">
-        <input type="checkbox" id="trigger" hidden />
-        <label for="trigger" class="trigger"></label>
+        <input
+          type="checkbox"
+          id="trigger"
+          hidden
+          aria-label="Reset application data"
+        />
+        <label
+          for="trigger"
+          class="trigger"
+          aria-label="Reset all data"
+        ></label>
         <div class="dots">
           <div class="dot"></div>
           <div class="dot"></div>
@@ -217,43 +230,51 @@
       <div class="todo-list-container">
         <h2 class="title">Todo App</h2>
         <div class="add-todo-container">
-          <input type="text" id="new-todo" placeholder="Add a new task" />
-          <button id="add-button">Add</button>
+          <input
+            type="text"
+            id="new-todo"
+            placeholder="Add a new task"
+            aria-label="New task input"
+          />
+          <button id="add-button" aria-label="Add new task">Add</button>
         </div>
         <h3>Todo List</h3>
         <ul id="todo-list"></ul>
         <div id="settings-panel">
           <h3>Pomodoro Settings</h3>
           <div class="settings-group">
-            <label>Pomodoro Duration:</label>
+            <label for="pomodoro-min">Pomodoro Duration:</label>
             <div class="duration-inputs">
               <input
                 type="number"
                 id="pomodoro-min"
                 min="0"
                 placeholder="Min"
+                aria-label="Pomodoro duration in minutes"
               />
             </div>
           </div>
           <div class="settings-group">
-            <label>Short Break Duration:</label>
+            <label for="short-break-min">Short Break Duration:</label>
             <div class="duration-inputs">
               <input
                 type="number"
                 id="short-break-min"
                 min="0"
                 placeholder="Min"
+                aria-label="Short break duration in minutes"
               />
             </div>
           </div>
           <div class="settings-group">
-            <label>Long Break Duration:</label>
+            <label for="long-break-min">Long Break Duration:</label>
             <div class="duration-inputs">
               <input
                 type="number"
                 id="long-break-min"
                 min="0"
                 placeholder="Min"
+                aria-label="Long break duration in minutes"
               />
             </div>
           </div>
@@ -261,11 +282,18 @@
             <label for="sessions-before-long-break"
               >Sessions Before Long Break:</label
             >
-            <input type="number" id="sessions-before-long-break" min="1" />
+            <input
+              type="number"
+              id="sessions-before-long-break"
+              min="1"
+              aria-label="Number of sessions before long break"
+            />
           </div>
           <div class="settings-buttons">
-            <button id="save-settings">Save</button>
-            <button id="back-to-todo">Back</button>
+            <button id="save-settings" aria-label="Save settings">Save</button>
+            <button id="back-to-todo" aria-label="Back to todo list">
+              Back
+            </button>
           </div>
         </div>
       </div>
@@ -277,7 +305,12 @@
       >
     </div>
     <div id="timer-overlay">
-      <div class="timer-sound-toggle">
+      <div
+        class="timer-sound-toggle"
+        role="button"
+        tabindex="0"
+        aria-label="Toggle background music"
+      >
         <div class="icon sound-toggle-icon">
           <img src="assets/svg/sound.svg" alt="Toggle Sound" />
         </div>
@@ -288,8 +321,15 @@
         id="timer-input-helper"
         inputmode="numeric"
         pattern="[0-9:]*"
+        aria-label="Timer input helper"
+        aria-hidden="true"
       />
-      <div id="timer-display" contenteditable="false">
+      <div
+        id="timer-display"
+        contenteditable="false"
+        role="timer"
+        aria-label="Timer display"
+      >
         <span class="timer-digit" data-position="0">0</span>
         <span class="timer-digit" data-position="1">0</span>
         <span class="timer-separator">:</span>
@@ -300,13 +340,28 @@
         <span class="timer-digit" data-position="5">0</span>
       </div>
       <div class="timer-controls">
-        <div class="icon pause-icon timer-control-icon">
+        <div
+          class="icon pause-icon timer-control-icon"
+          role="button"
+          tabindex="0"
+          aria-label="Pause or resume timer"
+        >
           <img src="assets/svg/pause.svg" alt="Pause" />
         </div>
-        <div class="icon edit-timer-icon timer-control-icon">
+        <div
+          class="icon edit-timer-icon timer-control-icon"
+          role="button"
+          tabindex="0"
+          aria-label="Edit timer duration"
+        >
           <img src="assets/svg/edit.svg" alt="Edit Timer" />
         </div>
-        <div class="icon stop-icon timer-control-icon">
+        <div
+          class="icon stop-icon timer-control-icon"
+          role="button"
+          tabindex="0"
+          aria-label="Stop timer"
+        >
           <img src="assets/svg/stop.svg" alt="Stop" />
         </div>
       </div>
@@ -328,7 +383,5 @@
       <source src="assets/audio/focus.mp3" type="audio/mp3" />
       Your browser does not support the audio element.
     </audio>
-
-
   </body>
 </html>

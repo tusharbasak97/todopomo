@@ -162,9 +162,8 @@ window.addEventListener("unhandledrejection", (event) => {
 // Register Service Worker for caching and offline support
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    // Determine the correct path for service worker based on environment
-    const isGitHubPages = window.location.hostname === 'tusharbasak97.github.io';
-    const swPath = isGitHubPages ? '/todopomo/js/service-worker.js' : '/js/service-worker.js';
+    // Use relative path that works for both localhost and GitHub Pages
+    const swPath = "./js/service-worker.js";
 
     navigator.serviceWorker
       .register(swPath)
@@ -183,12 +182,21 @@ let deferredPrompt;
 
 // Check if install prompt was already shown in this session
 function hasInstallPromptBeenShown() {
-  return sessionStorage.getItem('installPromptShown') === 'true';
+  return sessionStorage.getItem("installPromptShown") === "true";
 }
 
 // Mark install prompt as shown for this session
 function markInstallPromptAsShown() {
-  sessionStorage.setItem('installPromptShown', 'true');
+  sessionStorage.setItem("installPromptShown", "true");
+}
+
+// Check if app is already installed
+function isAppInstalled() {
+  // Check if running in standalone mode (PWA already installed)
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  );
 }
 
 window.addEventListener("beforeinstallprompt", (e) => {
@@ -198,7 +206,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
   deferredPrompt = e;
 
   // Show install prompt after 3 seconds (only once per session)
-  if (!hasInstallPromptBeenShown()) {
+  if (!hasInstallPromptBeenShown() && !isAppInstalled()) {
     setTimeout(() => {
       showInstallPrompt();
     }, 3000);
@@ -206,7 +214,8 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 
 function showInstallPrompt() {
-  if (!deferredPrompt || hasInstallPromptBeenShown()) return;
+  if (!deferredPrompt || hasInstallPromptBeenShown() || isAppInstalled())
+    return;
 
   markInstallPromptAsShown();
 
@@ -271,7 +280,6 @@ window.__todopomo = {
   },
   // Reset install prompt for testing (clears session flag)
   resetInstallPrompt: () => {
-    sessionStorage.removeItem('installPromptShown');
-    console.log('Install prompt reset - will show again on next page load if conditions are met');
+    sessionStorage.removeItem("installPromptShown");
   },
 };

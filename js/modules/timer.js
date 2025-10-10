@@ -133,6 +133,7 @@ class TimerManager {
     this.timerOverlay.classList.add("visible");
     blockingManager.enterFullscreen();
     this.pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
+    this.pauseResumeIcon.querySelector("img").alt = "Pause";
 
     // Activate blocking and focus features
     blockingManager.activate();
@@ -191,11 +192,13 @@ class TimerManager {
     setTimeout(() => {
       if (this.isPaused) {
         img.src = "assets/svg/pause.svg";
+        img.alt = "Pause";
         this.isPaused = false;
         this.startCountdown();
         audioManager.play();
       } else {
         img.src = "assets/svg/play.svg";
+        img.alt = "Resume";
         this.isPaused = true;
         cancelAnimationFrame(this.timerRequest);
         audioManager.pause();
@@ -403,10 +406,12 @@ class TimerManager {
     this.stopIcon.style.opacity = "";
 
     this.editTimerIcon.querySelector("img").src = "assets/svg/edit.svg";
+    this.editTimerIcon.querySelector("img").alt = "Edit Timer";
 
     if (this.remainingTime > 0) {
       this.isPaused = false;
       this.pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
+      this.pauseResumeIcon.querySelector("img").alt = "Pause";
       this.startCountdown();
     }
   }
@@ -487,6 +492,7 @@ class TimerManager {
       cancelAnimationFrame(this.timerRequest);
       this.isPaused = true;
       this.pauseResumeIcon.querySelector("img").src = "assets/svg/play.svg";
+      this.pauseResumeIcon.querySelector("img").alt = "Resume";
       audioManager.pause();
     }
 
@@ -522,6 +528,7 @@ class TimerManager {
     selection.addRange(range);
 
     this.editTimerIcon.querySelector("img").src = "assets/svg/save.svg";
+    this.editTimerIcon.querySelector("img").alt = "Save Timer";
   }
 
   updateSettings(settings) {
