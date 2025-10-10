@@ -9,44 +9,49 @@
 const CACHE_VERSION = "v1";
 const CACHE_NAME = `todopomo-${CACHE_VERSION}`;
 const CACHE_EXPIRY = 365 * 24 * 60 * 60 * 1000; // 1 year in milliseconds
+
+// Determine base path based on environment
+const isGitHubPages = self.location.hostname === 'tusharbasak97.github.io';
+const basePath = isGitHubPages ? '/todopomo' : '';
+
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/css/style.css",
-  "/js/main.js",
-  "/js/service-worker.js",
-  "/js/modules/config.js",
-  "/js/modules/storage.js",
-  "/js/modules/audio.js",
-  "/js/modules/timer.js",
-  "/js/modules/blocking.js",
-  "/js/modules/focus.js",
-  "/js/modules/todos.js",
-  "/js/modules/settings.js",
-  "/js/modules/ui.js",
-  "/assets/audio/focus.mp3", // Cache audio file for offline
-  "/assets/images/favicon-16x16.png",
-  "/assets/images/favicon-32x32.png",
-  "/assets/images/favicon-48x48.png",
-  "/assets/images/favicon-64x64.png",
-  "/assets/images/web-app-manifest-192x192.png",
-  "/assets/images/web-app-manifest-512x512.png",
-  "/assets/images/apple-touch-icon.png",
-  "/assets/images/logo.png",
-  "/assets/site.webmanifest",
-  "/assets/browserconfig.xml",
-  "/assets/svg/delete.svg",
-  "/assets/svg/edit.svg",
-  "/assets/svg/lock.svg",
-  "/assets/svg/unlock.svg",
-  "/assets/svg/mute.svg",
-  "/assets/svg/sound.svg",
-  "/assets/svg/play.svg",
-  "/assets/svg/pause.svg",
-  "/assets/svg/stop.svg",
-  "/assets/svg/save.svg",
-  "/assets/svg/settings.svg",
-  "/favicon.ico",
+  `${basePath}/`,
+  `${basePath}/index.html`,
+  `${basePath}/css/style.css`,
+  `${basePath}/js/main.js`,
+  `${basePath}/js/service-worker.js`,
+  `${basePath}/js/modules/config.js`,
+  `${basePath}/js/modules/storage.js`,
+  `${basePath}/js/modules/audio.js`,
+  `${basePath}/js/modules/timer.js`,
+  `${basePath}/js/modules/blocking.js`,
+  `${basePath}/js/modules/focus.js`,
+  `${basePath}/js/modules/todos.js`,
+  `${basePath}/js/modules/settings.js`,
+  `${basePath}/js/modules/ui.js`,
+  `${basePath}/assets/audio/focus.mp3`, // Cache audio file for offline
+  `${basePath}/assets/images/favicon-16x16.png`,
+  `${basePath}/assets/images/favicon-32x32.png`,
+  `${basePath}/assets/images/favicon-48x48.png`,
+  `${basePath}/assets/images/favicon-64x64.png`,
+  `${basePath}/assets/images/web-app-manifest-192x192.png`,
+  `${basePath}/assets/images/web-app-manifest-512x512.png`,
+  `${basePath}/assets/images/apple-touch-icon.png`,
+  `${basePath}/assets/images/logo.png`,
+  `${basePath}/assets/site.webmanifest`,
+  `${basePath}/assets/browserconfig.xml`,
+  `${basePath}/assets/svg/delete.svg`,
+  `${basePath}/assets/svg/edit.svg`,
+  `${basePath}/assets/svg/lock.svg`,
+  `${basePath}/assets/svg/unlock.svg`,
+  `${basePath}/assets/svg/mute.svg`,
+  `${basePath}/assets/svg/sound.svg`,
+  `${basePath}/assets/svg/play.svg`,
+  `${basePath}/assets/svg/pause.svg`,
+  `${basePath}/assets/svg/stop.svg`,
+  `${basePath}/assets/svg/save.svg`,
+  `${basePath}/assets/svg/settings.svg`,
+  `${basePath}/favicon.ico`,
   "https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js", // Cache GSAP for offline
 ];
 
@@ -198,7 +203,7 @@ self.addEventListener("fetch", (event) => {
           }
           // Offline and not in cache - return offline page or fail gracefully
           if (event.request.destination === "document") {
-            return caches.match("/index.html");
+            return caches.match(`${basePath}/index.html`);
           }
           return new Response("Offline - resource not cached", {
             status: 503,

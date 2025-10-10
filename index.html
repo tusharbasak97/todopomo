@@ -222,7 +222,7 @@
         </div>
         <h3>Todo List</h3>
         <ul id="todo-list"></ul>
-        <div id="settings-panel" style="display: none">
+        <div id="settings-panel">
           <h3>Pomodoro Settings</h3>
           <div class="settings-group">
             <label>Pomodoro Duration:</label>
@@ -288,7 +288,6 @@
         id="timer-input-helper"
         inputmode="numeric"
         pattern="[0-9:]*"
-        style="position: absolute; opacity: 0; pointer-events: none"
       />
       <div id="timer-display" contenteditable="false">
         <span class="timer-digit" data-position="0">0</span>
@@ -325,133 +324,11 @@
     </div>
 
     <!-- Hidden audio element for background music -->
-    <audio id="background-music" loop preload="auto" style="display: none">
+    <audio id="background-music" loop preload="auto">
       <source src="assets/audio/focus.mp3" type="audio/mp3" />
       Your browser does not support the audio element.
     </audio>
 
-    <style>
-      .timer-control-icon {
-        width: 50px;
-        height: 50px;
-      }
 
-      /* Settings Panel */
-      #settings-button {
-        background: var(--bg-color);
-        border: none;
-        color: var(--text-color);
-        padding: 10px 15px;
-        border-radius: var(--radius-medium);
-        cursor: pointer;
-        box-shadow: 3px 3px 6px var(--shadow-dark),
-          -3px -3px 6px var(--shadow-light);
-        transition: box-shadow 0.2s ease-in-out;
-        margin-left: 10px;
-      }
-
-      #settings-button:hover {
-        box-shadow: 2px 2px 4px var(--shadow-dark),
-          -2px -2px 4px var(--shadow-light);
-      }
-
-      #settings-panel {
-        text-align: center;
-      }
-
-      #settings-panel h3 {
-        margin-bottom: 20px;
-        color: var(--text-color);
-      }
-
-      .settings-group {
-        margin-bottom: 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .settings-group label {
-        margin-bottom: 5px;
-        color: var(--text-color);
-      }
-
-      .settings-group input {
-        padding: 10px;
-        border-radius: var(--radius-medium);
-        border: none;
-        background: var(--bg-color);
-        color: var(--text-color);
-        box-shadow: inset 3px 3px 6px var(--shadow-dark),
-          inset -3px -3px 6px var(--shadow-light);
-        width: 200px;
-        text-align: center;
-      }
-
-      .duration-inputs {
-        display: flex;
-        gap: 5px;
-        justify-content: center;
-      }
-
-      .settings-buttons {
-        margin-top: 20px;
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-      }
-
-      .settings-buttons button {
-        padding: 15px 25px;
-        border: none;
-        background: var(--bg-color);
-        color: var(--text-color);
-        border-radius: var(--radius-medium);
-        cursor: pointer;
-        font-weight: 600;
-        box-shadow: 3px 3px 6px var(--shadow-dark),
-          -3px -3px 6px var(--shadow-light),
-          inset -3px -3px 3px var(--shadow-dark),
-          inset 3px 3px 3px var(--shadow-light);
-        transition: all 0.2s ease-in-out;
-      }
-
-      .settings-buttons button:focus {
-        outline: 2px solid var(--text-color);
-        outline-offset: 2px;
-      }
-
-      .settings-buttons button:hover {
-        box-shadow: 2px 2px 4px var(--shadow-dark),
-          -2px -2px 4px var(--shadow-light);
-      }
-
-      /* Orientation Message */
-      .orientation-message {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 10px;
-        text-align: center;
-        font-size: 16px;
-        z-index: 1000;
-        display: none;
-      }
-
-      @media screen and (orientation: portrait) {
-        .orientation-message {
-          display: none;
-        }
-      }
-
-      @media screen and (orientation: landscape) {
-        .orientation-message {
-          display: block;
-        }
-      }
-    </style>
   </body>
 </html>

@@ -1039,3 +1039,129 @@ input[type="number"] {
 .orientation-message {
   display: none;
 }
+
+/* Hidden elements */
+#timer-input-helper {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#background-music {
+  display: none;
+}
+
+/* Settings panel initially hidden */
+#settings-panel {
+  display: none;
+}
+
+/* Timer control icon sizing */
+.timer-control-icon {
+  width: 50px;
+  height: 50px;
+}
+
+/* Error dialog styles */
+.error-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: hsla(348, 100%, 61%, 0.95);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  text-align: center;
+  box-shadow: 0 8px 32px hsla(348, 100%, 61%, 0.3);
+  z-index: 99999;
+  max-width: 500px;
+}
+
+.error-dialog h3 {
+  margin: 0 0 10px 0;
+}
+
+.error-dialog p {
+  margin: 0;
+}
+
+.error-dialog button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: white;
+  color: hsl(348, 100%, 61%);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* PWA Install Banner */
+.install-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, hsl(230, 73%, 58%) 0%, hsl(260, 47%, 47%) 100%);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  animation: slideDown 0.3s ease-out;
+}
+
+.install-banner-content {
+  flex: 1;
+}
+
+.install-banner-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.install-banner-subtitle {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.install-btn {
+  background: white;
+  color: hsl(230, 73%, 58%);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+
+.dismiss-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

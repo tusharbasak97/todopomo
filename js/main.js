@@ -127,35 +127,11 @@ class App {
 
   showFatalError(error) {
     const errorDiv = document.createElement("div");
+    errorDiv.className = "error-dialog";
     errorDiv.innerHTML = `
-      <div style="
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: hsla(348, 100%, 61%, 0.95);
-        color: white;
-        padding: 30px;
-        border-radius: 12px;
-        font-size: 16px;
-        text-align: center;
-        box-shadow: 0 8px 32px hsla(348, 100%, 61%, 0.3);
-        z-index: 99999;
-        max-width: 500px;
-      ">
-        <h3 style="margin: 0 0 10px 0;">⚠️ Application Error</h3>
-        <p style="margin: 0;">${error.message}</p>
-        <button onclick="window.location.reload()" style="
-          margin-top: 20px;
-          padding: 10px 20px;
-          background: white;
-          color: hsl(348, 100%, 61%);
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-weight: 600;
-        ">Reload Page</button>
-      </div>
+      <h3>⚠️ Application Error</h3>
+      <p>${error.message}</p>
+      <button onclick="window.location.reload()">Reload Page</button>
     `;
     document.body.appendChild(errorDiv);
   }
@@ -186,8 +162,12 @@ window.addEventListener("unhandledrejection", (event) => {
 // Register Service Worker for caching and offline support
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
+    // Determine the correct path for service worker based on environment
+    const isGitHubPages = window.location.hostname === 'tusharbasak97.github.io';
+    const swPath = isGitHubPages ? '/todopomo/js/service-worker.js' : '/js/service-worker.js';
+
     navigator.serviceWorker
-      .register("/js/service-worker.js")
+      .register(swPath)
       .then((registration) => {
         // Service worker registered successfully - check for updates
         registration.update();
@@ -200,7 +180,16 @@ if ("serviceWorker" in navigator) {
 
 // Handle PWA installation with 3-second prompt
 let deferredPrompt;
-let installPromptShown = false;
+
+// Check if install prompt was already shown in this session
+function hasInstallPromptBeenShown() {
+  return sessionStorage.getItem('installPromptShown') === 'true';
+}
+
+// Mark install prompt as shown for this session
+function markInstallPromptAsShown() {
+  sessionStorage.setItem('installPromptShown', 'true');
+}
 
 window.addEventListener("beforeinstallprompt", (e) => {
   // Prevent the default browser install prompt
@@ -208,8 +197,8 @@ window.addEventListener("beforeinstallprompt", (e) => {
   // Store the event for later use
   deferredPrompt = e;
 
-  // Show install prompt after 3 seconds (only once)
-  if (!installPromptShown) {
+  // Show install prompt after 3 seconds (only once per session)
+  if (!hasInstallPromptBeenShown()) {
     setTimeout(() => {
       showInstallPrompt();
     }, 3000);
@@ -217,73 +206,22 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 
 function showInstallPrompt() {
-  if (!deferredPrompt || installPromptShown) return;
+  if (!deferredPrompt || hasInstallPromptBeenShown()) return;
 
-  installPromptShown = true;
+  markInstallPromptAsShown();
 
   // Create install prompt overlay
   const installBanner = document.createElement("div");
-  installBanner.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, hsl(230, 73%, 58%) 0%, hsl(260, 47%, 47%) 100%);
-    color: white;
-    padding: 15px 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    animation: slideDown 0.3s ease-out;
-  `;
+  installBanner.className = "install-banner";
 
   installBanner.innerHTML = `
-    <div style="flex: 1;">
-      <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px;">📱 Install TodoPomo</div>
-      <div style="font-size: 13px; opacity: 0.9;">Add to home screen for faster access & offline use</div>
+    <div class="install-banner-content">
+      <div class="install-banner-title">📱 Install TodoPomo</div>
+      <div class="install-banner-subtitle">Add to home screen for faster access & offline use</div>
     </div>
-    <button id="install-btn" style="
-      background: white;
-      color: hsl(230, 73%, 58%);
-      border: none;
-      padding: 8px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
-      transition: transform 0.2s;
-    ">Install</button>
-    <button id="dismiss-btn" style="
-      background: transparent;
-      color: white;
-      border: 1px solid hsla(0, 0%, 100%, 0.5);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    ">Later</button>
+    <button id="install-btn" class="install-btn">Install</button>
+    <button id="dismiss-btn" class="dismiss-btn">Later</button>
   `;
-
-  // Add animation
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-    }
-  `;
-  document.head.appendChild(style);
 
   document.body.appendChild(installBanner);
 
@@ -314,7 +252,7 @@ function showInstallPrompt() {
 // Track when app is installed
 window.addEventListener("appinstalled", () => {
   deferredPrompt = null;
-  installPromptShown = true;
+  markInstallPromptAsShown();
 });
 
 // Export for debugging
@@ -327,8 +265,13 @@ window.__todopomo = {
   storage,
   // Allow manual installation via console if needed
   installApp: () => {
-    if (deferredPrompt && !installPromptShown) {
+    if (deferredPrompt && !hasInstallPromptBeenShown()) {
       showInstallPrompt();
     }
+  },
+  // Reset install prompt for testing (clears session flag)
+  resetInstallPrompt: () => {
+    sessionStorage.removeItem('installPromptShown');
+    console.log('Install prompt reset - will show again on next page load if conditions are met');
   },
 };
