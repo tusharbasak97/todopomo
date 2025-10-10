@@ -14,15 +14,44 @@ class BlockingManager {
     this.timerOverlay = null;
     this.timerDisplay = null;
     this.isLocked = false;
+    this.fullscreenTipBanner = null;
+    this.fullscreenTipTimeout = null;
   }
 
   setElements(timerOverlay, timerDisplay) {
     this.timerOverlay = timerOverlay;
     this.timerDisplay = timerDisplay;
+    this.fullscreenTipBanner = document.getElementById("fullscreen-tip-banner");
   }
 
   setLockState(locked) {
     this.isLocked = locked;
+  }
+
+  // Custom fullscreen tip banner
+  showCustomFullscreenMessage() {
+    if (!this.fullscreenTipBanner) return;
+
+    this.fullscreenTipBanner.style.display = "flex";
+    
+    const dismissButton = this.fullscreenTipBanner.querySelector(".fullscreen-tip-dismiss");
+    if (dismissButton) {
+      dismissButton.onclick = () => this.hideCustomFullscreenMessage();
+    }
+
+    this.fullscreenTipTimeout = setTimeout(() => {
+      this.hideCustomFullscreenMessage();
+    }, 8000);
+  }
+
+  hideCustomFullscreenMessage() {
+    if (this.fullscreenTipBanner) {
+      this.fullscreenTipBanner.style.display = "none";
+    }
+    if (this.fullscreenTipTimeout) {
+      clearTimeout(this.fullscreenTipTimeout);
+      this.fullscreenTipTimeout = null;
+    }
   }
 
   // Keyboard blocking
@@ -240,6 +269,11 @@ class BlockingManager {
         // Silent fail - orientation lock not supported
       });
     }
+
+    // Show custom fullscreen tip after entering fullscreen
+    setTimeout(() => {
+      this.showCustomFullscreenMessage();
+    }, 500);
   }
 
   exitFullscreen() {
@@ -307,6 +341,7 @@ class BlockingManager {
   deactivate() {
     this.deactivateKeyboardBlocking();
     this.deactivateMouseBlocking();
+    this.hideCustomFullscreenMessage();
   }
 }
 
