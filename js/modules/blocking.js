@@ -33,8 +33,10 @@ class BlockingManager {
     if (!this.fullscreenTipBanner) return;
 
     this.fullscreenTipBanner.style.display = "flex";
-    
-    const dismissButton = this.fullscreenTipBanner.querySelector(".fullscreen-tip-dismiss");
+
+    const dismissButton = this.fullscreenTipBanner.querySelector(
+      ".fullscreen-tip-dismiss"
+    );
     if (dismissButton) {
       dismissButton.onclick = () => this.hideCustomFullscreenMessage();
     }
