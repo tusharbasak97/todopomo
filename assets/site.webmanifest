@@ -3,7 +3,7 @@
   "short_name": "TodoPomo",
   "description": "Complete your daily tasks faster with TodoPomo - a free online Pomodoro timer with integrated todo list",
   "start_url": "todopomo/",
-  "scope": "./",
+  "scope": "todopomo/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#e0e0e0",
