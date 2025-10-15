@@ -112,7 +112,7 @@ class TodoManager {
     this.todoList.appendChild(li);
 
     // GSAP animation for new todo item (skip during initial load)
-    if (!this.isInitialLoad) {
+    if (!this.isInitialLoad && typeof gsap !== "undefined") {
       // Set initial state - slide from top
       gsap.set(li, {
         opacity: 0,

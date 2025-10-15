@@ -141,7 +141,7 @@ class App {
     // Mark as animated for this session
     sessionStorage.setItem("hasAnimatedOnLoad", "true");
 
-    // Set initial hidden state for all elements
+    // Define all element selectors and get references
     const allElements = [
       ".logo-text",
       ".dark-mode-toggle-wrapper",
@@ -156,95 +156,132 @@ class App {
       ".footer",
     ];
 
-    // Set all elements to hidden initially
-    allElements.forEach((selector) => {
-      const element = document.querySelector(selector);
-      if (element) {
-        gsap.set(selector, { opacity: 0 });
-      }
-    });
-
-    // Get todo list container and items
     const todoList = document.getElementById("todo-list");
     const todoItems = document.querySelectorAll(".todo-item");
 
-    // Set todo list to collapsed state
-    if (todoList) {
-      gsap.set(todoList, { height: 0, overflow: "hidden" });
+    // Fallback function to make everything visible without animations
+    const fallbackToVisible = () => {
+      // Make all elements visible
+      allElements.forEach((selector) => {
+        const element = document.querySelector(selector);
+        if (element) {
+          element.style.opacity = "1";
+        }
+      });
+
+      // Make todo items visible
+      todoItems.forEach((item) => {
+        item.style.opacity = "1";
+        item.style.transform = "none";
+      });
+
+      // Set todo list to auto height
+      if (todoList) {
+        todoList.style.height = "auto";
+        todoList.style.overflow = "";
+      }
+
+      // Enable individual animations for new todos
+      todoManager.isInitialLoad = false;
+    };
+
+    // Check if GSAP is available
+    if (typeof gsap === "undefined" && typeof window.gsap === "undefined") {
+      fallbackToVisible();
+      return;
     }
 
-    // Set todo items hidden - slide from top
-    gsap.set(".todo-item", {
-      opacity: 0,
-      y: -30,
-      scaleY: 0,
-      transformOrigin: "top center",
-    });
-
-    // Create timeline for animations
-    const tl = gsap.timeline();
-
-    // Step 1: Fade in all elements simultaneously (slower fade)
-    tl.to(allElements, {
-      opacity: 1,
-      duration: 1.2,
-      ease: "power2.out",
-      stagger: 0,
-    });
-
-    // Step 2: After fade-in, expand container and slide in todo items
-    if (todoItems.length > 0 && todoList) {
-      // Calculate cumulative heights for container expansion
-      let cumulativeHeight = 0;
-
-      todoItems.forEach((item, index) => {
-        // Calculate the height this item will add
-        const itemHeight = item.scrollHeight + 15; // item height + margin
-        cumulativeHeight += itemHeight;
-
-        // Animate the container height to accommodate this item
-        tl.to(
-          todoList,
-          {
-            height: cumulativeHeight,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          index === 0 ? "+=0.3" : "-=0.3"
-        );
-
-        // Simultaneously animate the item sliding in from top
-        tl.to(
-          item,
-          {
-            opacity: 1,
-            y: 0,
-            scaleY: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          "-=0.5"
-        );
+    // Wrap GSAP animation logic in try/catch
+    try {
+      // Set all elements to hidden initially
+      allElements.forEach((selector) => {
+        const element = document.querySelector(selector);
+        if (element) {
+          gsap.set(selector, { opacity: 0 });
+        }
       });
 
-      // After all animations complete, set container to auto height
-      tl.add(() => {
-        if (todoList) {
-          todoList.style.height = "auto";
-          todoList.style.overflow = "";
-        }
-        // Allow individual animations for newly added todos
-        todoManager.isInitialLoad = false;
+      // Set todo list to collapsed state
+      if (todoList) {
+        gsap.set(todoList, { height: 0, overflow: "hidden" });
+      }
+
+      // Set todo items hidden - slide from top
+      gsap.set(".todo-item", {
+        opacity: 0,
+        y: -30,
+        scaleY: 0,
+        transformOrigin: "top center",
       });
-    } else {
-      // No todos, just enable individual animations
-      tl.add(() => {
-        if (todoList) {
-          todoList.style.height = "auto";
-          todoList.style.overflow = "";
-        }
-        todoManager.isInitialLoad = false;
-      }, "+=0.3");
+
+      // Create timeline for animations
+      const tl = gsap.timeline();
+
+      // Step 1: Fade in all elements simultaneously (slower fade)
+      tl.to(allElements, {
+        opacity: 1,
+        duration: 1.2,
+        ease: "power2.out",
+        stagger: 0,
+      });
+
+      // Step 2: After fade-in, expand container and slide in todo items
+      if (todoItems.length > 0 && todoList) {
+        // Calculate cumulative heights for container expansion
+        let cumulativeHeight = 0;
+
+        todoItems.forEach((item, index) => {
+          // Calculate the height this item will add
+          const itemHeight = item.scrollHeight + 15; // item height + margin
+          cumulativeHeight += itemHeight;
+
+          // Animate the container height to accommodate this item
+          tl.to(
+            todoList,
+            {
+              height: cumulativeHeight,
+              duration: 0.5,
+              ease: "power2.out",
+            },
+            index === 0 ? "+=0.3" : "-=0.3"
+          );
+
+          // Simultaneously animate the item sliding in from top
+          tl.to(
+            item,
+            {
+              opacity: 1,
+              y: 0,
+              scaleY: 1,
+              duration: 0.5,
+              ease: "power2.out",
+            },
+            "-=0.5"
+          );
+        });
+
+        // After all animations complete, set container to auto height
+        tl.add(() => {
+          if (todoList) {
+            todoList.style.height = "auto";
+            todoList.style.overflow = "";
+          }
+          // Allow individual animations for newly added todos
+          todoManager.isInitialLoad = false;
+        });
+      } else {
+        // No todos, just enable individual animations
+        tl.add(() => {
+          if (todoList) {
+            todoList.style.height = "auto";
+            todoList.style.overflow = "";
+          }
+          todoManager.isInitialLoad = false;
+        }, "+=0.3");
+      }
+    } catch (error) {
+      // Fallback to visible state on animation error
+      fallbackToVisible();
     }
   }
 

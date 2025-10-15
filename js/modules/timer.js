@@ -165,11 +165,39 @@ class TimerManager {
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
     this.setTimerDigits(initialTimeText);
 
+    // Start colon blinking animation
+    this.startColonBlink();
+
     // Start music
     audioManager.play(true);
 
     this.lastFrameTime = performance.now();
     this.timerRequest = requestAnimationFrame((time) => this.updateTimer(time));
+  }
+
+  startColonBlink() {
+    // Get all timer separators (colons)
+    const separators = this.timerDisplay.querySelectorAll(".timer-separator");
+
+    // Create infinite blinking animation with GSAP
+    separators.forEach((separator) => {
+      gsap.to(separator, {
+        opacity: 0,
+        duration: 0.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+      });
+    });
+  }
+
+  stopColonBlink() {
+    // Stop and reset colon blinking
+    const separators = this.timerDisplay.querySelectorAll(".timer-separator");
+    separators.forEach((separator) => {
+      gsap.killTweensOf(separator);
+      gsap.set(separator, { opacity: 0.8 });
+    });
   }
 
   startBreak() {
@@ -192,6 +220,9 @@ class TimerManager {
       minutes
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
     this.setTimerDigits(initialTimeText);
+
+    // Start colon blinking animation
+    this.startColonBlink();
 
     audioManager.play(true);
 
@@ -217,12 +248,16 @@ class TimerManager {
           this.isPaused = false;
           this.startCountdown();
           audioManager.play();
+          // Resume colon blinking
+          this.startColonBlink();
         } else {
           img.src = "assets/svg/play.svg";
           img.alt = "Resume";
           this.isPaused = true;
           cancelAnimationFrame(this.timerRequest);
           audioManager.pause();
+          // Stop colon blinking when paused
+          this.stopColonBlink();
         }
 
         // Animate back in
@@ -255,6 +290,9 @@ class TimerManager {
   }
 
   hide() {
+    // Stop colon blinking
+    this.stopColonBlink();
+
     // GSAP animation for timer overlay hide
     gsap.to(this.timerOverlay, {
       scale: 0.8,
@@ -455,6 +493,8 @@ class TimerManager {
       this.pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
       this.pauseResumeIcon.querySelector("img").alt = "Pause";
       this.startCountdown();
+      // Restart colon blinking after editing
+      this.startColonBlink();
     }
   }
 
@@ -562,6 +602,8 @@ class TimerManager {
   }
 
   enableEditing() {
+    this.stopColonBlink();
+
     if (!this.isPaused && this.timerRequest) {
       cancelAnimationFrame(this.timerRequest);
       this.isPaused = true;
