@@ -166,8 +166,8 @@ body {
 
 /* Focus styles for accessibility */
 #new-todo:focus {
-  outline: 2px solid var(--text-color);
-  outline-offset: 2px;
+  outline: none;
+  
 }
 
 #new-todo::placeholder {
@@ -196,14 +196,13 @@ input[type="number"] {
   box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light),
     inset -3px -3px 3px var(--shadow-dark),
     inset 3px 3px 3px var(--shadow-light);
-  transition: all 0.2s ease-in-out, background 0.3s ease, color 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: all 0.2s ease-in-out;
 }
 
 /* Focus styles for accessibility */
 #add-button:focus {
-  outline: 2px solid var(--text-color);
-  outline-offset: 2px;
+  outline: none;
+  
 }
 
 #add-button:hover {
@@ -459,8 +458,8 @@ input[type="number"] {
 
 /* Focus styles for accessibility */
 .timer-control-icon:focus {
-  outline: 2px solid var(--text-color);
-  outline-offset: 2px;
+  outline: none;
+  
 }
 
 .timer-control-icon:hover {
@@ -542,7 +541,7 @@ input[type="number"] {
 /* Accessibility styles for lock toggle */
 .timer-lock-toggle:focus {
   outline: 2px solid var(--white);
-  outline-offset: 2px;
+  
   border-radius: 4px;
 }
 
@@ -635,8 +634,8 @@ input[type="number"] {
 
 /* Focus styles for accessibility */
 .dark-mode-toggle-wrapper .switch:focus {
-  outline: 2px solid var(--text-color);
-  outline-offset: 2px;
+  outline: none;
+  
 }
 
 .dark-mode-toggle-wrapper .switch:hover {
@@ -914,8 +913,8 @@ input[type="number"] {
 }
 
 .settings-group input:focus {
-  outline: 2px solid var(--text-color);
-  outline-offset: 2px;
+  outline: none;
+  
 }
 
 .settings-group input:invalid {

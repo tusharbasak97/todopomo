@@ -4,6 +4,7 @@
  */
 
 import { storage } from "./storage.js";
+import { Confetti } from "./confetti.js";
 
 class TodoManager {
   constructor() {
@@ -146,6 +147,9 @@ class TodoManager {
         duration: 0.5,
         ease: "power2.out",
       });
+
+      // Fire confetti on task completion
+      Confetti.fireOnElement(label);
     } else {
       // Removing strikethrough
       gsap.to(label, {
