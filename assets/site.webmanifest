@@ -2,14 +2,19 @@
   "name": "TodoPomo - Pomodoro Timer & Todo List",
   "short_name": "TodoPomo",
   "description": "Complete your daily tasks faster with TodoPomo - a free online Pomodoro timer with integrated todo list",
-  "start_url": "todopomo/",
-  "scope": "todopomo/",
+  "id": "/todopomo/",
+  "start_url": "/todopomo/",
+  "scope": "/todopomo/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#e0e0e0",
   "theme_color": "#e0e0e0",
   "categories": ["productivity", "lifestyle", "utilities"],
   "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
   "icons": [
     {
       "src": "images/favicon-16x16.png",
