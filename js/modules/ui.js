@@ -67,17 +67,34 @@ class UIManager {
     const enabled = audioManager.toggle();
     const img = this.soundToggleIcon.querySelector("img");
 
-    if (enabled) {
-      img.src = "assets/svg/sound.svg";
-      img.alt = "Mute";
-      if (!timerManager.isPaused && timerManager.isTimerActive()) {
-        audioManager.play();
-      }
-    } else {
-      img.src = "assets/svg/mute.svg";
-      img.alt = "Unmute";
-      audioManager.pause();
-    }
+    // GSAP animation for icon change
+    gsap.to(img, {
+      scale: 0,
+      rotation: 180,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        if (enabled) {
+          img.src = "assets/svg/sound.svg";
+          img.alt = "Mute";
+          if (!timerManager.isPaused && timerManager.isTimerActive()) {
+            audioManager.play();
+          }
+        } else {
+          img.src = "assets/svg/mute.svg";
+          img.alt = "Unmute";
+          audioManager.pause();
+        }
+
+        // Animate back in
+        gsap.to(img, {
+          scale: 1,
+          rotation: 360,
+          duration: 0.2,
+          ease: "back.out(1.7)",
+        });
+      },
+    });
   }
 
   setupLockToggle() {
@@ -114,24 +131,34 @@ class UIManager {
 
     const img = this.lockToggleIcon.querySelector("img");
 
-    // Add switching class for animation
-    this.lockToggleIcon.classList.add("switching");
+    // GSAP animation for icon change
+    gsap.to(img, {
+      scale: 0,
+      rotation: 180,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        if (isLocked) {
+          img.src = "assets/svg/lock.svg";
+          img.alt = "Locked";
+          this.lockToggleButton.setAttribute("aria-pressed", "true");
+          this.lockToggleButton.classList.add("is-locked");
+        } else {
+          img.src = "assets/svg/unlock.svg";
+          img.alt = "Unlocked";
+          this.lockToggleButton.setAttribute("aria-pressed", "false");
+          this.lockToggleButton.classList.remove("is-locked");
+        }
 
-    setTimeout(() => {
-      if (isLocked) {
-        img.src = "assets/svg/lock.svg";
-        img.alt = "Locked";
-        this.lockToggleButton.setAttribute("aria-pressed", "true");
-        this.lockToggleButton.classList.add("is-locked");
-      } else {
-        img.src = "assets/svg/unlock.svg";
-        img.alt = "Unlocked";
-        this.lockToggleButton.setAttribute("aria-pressed", "false");
-        this.lockToggleButton.classList.remove("is-locked");
-      }
-
-      this.lockToggleIcon.classList.remove("switching");
-    }, 150);
+        // Animate back in
+        gsap.to(img, {
+          scale: 1,
+          rotation: 360,
+          duration: 0.2,
+          ease: "back.out(1.7)",
+        });
+      },
+    });
 
     storage.saveLockState(isLocked);
   }

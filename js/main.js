@@ -80,6 +80,9 @@ class App {
       // Load initial data
       this.loadInitialData();
 
+      // Professional sequential fade-in animation for all components
+      this.animateComponentsOnLoad();
+
       this.initialized = true;
     } catch (error) {
       this.showFatalError(error);
@@ -122,6 +125,126 @@ class App {
     } else {
       // Load saved todos
       todoManager.load();
+    }
+  }
+
+  animateComponentsOnLoad() {
+    // Check if this is the first visit using sessionStorage
+    const hasAnimated = sessionStorage.getItem("hasAnimatedOnLoad");
+
+    if (hasAnimated === "true") {
+      // Not first load - make everything visible immediately
+      todoManager.isInitialLoad = false;
+      return;
+    }
+
+    // Mark as animated for this session
+    sessionStorage.setItem("hasAnimatedOnLoad", "true");
+
+    // Set initial hidden state for all elements
+    const allElements = [
+      ".logo-text",
+      ".dark-mode-toggle-wrapper",
+      "#settings-button",
+      ".reset-container",
+      ".todo-list-container",
+      ".todo-list-container h2",
+      ".todo-list-container h3",
+      ".add-todo-container",
+      "#new-todo",
+      "#add-button",
+      ".footer",
+    ];
+
+    // Set all elements to hidden initially
+    allElements.forEach((selector) => {
+      const element = document.querySelector(selector);
+      if (element) {
+        gsap.set(selector, { opacity: 0 });
+      }
+    });
+
+    // Get todo list container and items
+    const todoList = document.getElementById("todo-list");
+    const todoItems = document.querySelectorAll(".todo-item");
+
+    // Set todo list to collapsed state
+    if (todoList) {
+      gsap.set(todoList, { height: 0, overflow: "hidden" });
+    }
+
+    // Set todo items hidden - slide from top
+    gsap.set(".todo-item", {
+      opacity: 0,
+      y: -30,
+      scaleY: 0,
+      transformOrigin: "top center",
+    });
+
+    // Create timeline for animations
+    const tl = gsap.timeline();
+
+    // Step 1: Fade in all elements simultaneously (slower fade)
+    tl.to(allElements, {
+      opacity: 1,
+      duration: 1.2,
+      ease: "power2.out",
+      stagger: 0,
+    });
+
+    // Step 2: After fade-in, expand container and slide in todo items
+    if (todoItems.length > 0 && todoList) {
+      // Calculate cumulative heights for container expansion
+      let cumulativeHeight = 0;
+
+      todoItems.forEach((item, index) => {
+        // Calculate the height this item will add
+        const itemHeight = item.scrollHeight + 15; // item height + margin
+        cumulativeHeight += itemHeight;
+
+        // Animate the container height to accommodate this item
+        tl.to(
+          todoList,
+          {
+            height: cumulativeHeight,
+            duration: 0.5,
+            ease: "power2.out",
+          },
+          index === 0 ? "+=0.3" : "-=0.3"
+        );
+
+        // Simultaneously animate the item sliding in from top
+        tl.to(
+          item,
+          {
+            opacity: 1,
+            y: 0,
+            scaleY: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          },
+          "-=0.5"
+        );
+      });
+
+      // After all animations complete, set container to auto height
+      tl.add(() => {
+        if (todoList) {
+          todoList.style.height = "auto";
+          todoList.style.overflow = "";
+        }
+        // Allow individual animations for newly added todos
+        todoManager.isInitialLoad = false;
+      });
+    } else {
+      // No todos, just enable individual animations
+      tl.add(() => {
+        if (todoList) {
+          todoList.style.height = "auto";
+          todoList.style.overflow = "";
+        }
+        todoManager.isInitialLoad = false;
+      }, "+=0.3");
     }
   }
 

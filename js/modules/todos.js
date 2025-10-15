@@ -9,6 +9,7 @@ class TodoManager {
   constructor() {
     this.todoList = null;
     this.onStartTimer = null; // Callback for starting timer
+    this.isInitialLoad = true; // Flag to track initial load
   }
 
   init(todoListElement) {
@@ -109,18 +110,71 @@ class TodoManager {
     li.appendChild(todoActions);
 
     this.todoList.appendChild(li);
+
+    // GSAP animation for new todo item (skip during initial load)
+    if (!this.isInitialLoad) {
+      // Set initial state - slide from top
+      gsap.set(li, {
+        opacity: 0,
+        y: -30,
+        scaleY: 0,
+        transformOrigin: "top center",
+      });
+
+      // Animate in with slide from top and vertical growth
+      gsap.to(li, {
+        opacity: 1,
+        y: 0,
+        scaleY: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    }
   }
 
   toggleCompleted(checkbox) {
     const item = checkbox.closest(".todo-item");
+    const label = item.querySelector("label");
     item.classList.toggle("completed", checkbox.checked);
+
+    // GSAP animation for strikethrough (both directions)
+    if (checkbox.checked) {
+      // Adding strikethrough
+      gsap.to(label, {
+        textDecoration: "line-through",
+        color: "var(--text-light)",
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    } else {
+      // Removing strikethrough
+      gsap.to(label, {
+        textDecoration: "none",
+        color: "var(--text-color)",
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    }
+
     this.save();
   }
 
   delete(target) {
     const item = target.closest(".todo-item");
-    item.remove();
-    this.save();
+
+    // GSAP animation for delete (opposite of add animation - slide up)
+    gsap.to(item, {
+      opacity: 0,
+      y: -30,
+      scaleY: 0,
+      duration: 0.5,
+      ease: "power2.in",
+      transformOrigin: "top center",
+      onComplete: () => {
+        item.remove();
+        this.save();
+      },
+    });
   }
 
   toggleEdit(icon) {

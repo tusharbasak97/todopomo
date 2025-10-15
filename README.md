@@ -21,6 +21,13 @@ A modern, neumorphic-styled productivity app combining todo list management with
 - **Background Music**: Optional focus music during work sessions
 - **Lock Mode**: Prevent accidental timer stops
 - **Professional Validation**: Input limits and error messages
+- **GSAP Animations**: Smooth animations throughout the app including:
+  - Sequential page load animations (first-time only)
+  - Todo item slide-in/slide-out from top
+  - Container expansion as tasks load
+  - Animated icon transitions (play/pause, mute/unmute, lock/unlock)
+  - Strikethrough animations for completed tasks
+  - Timer digit flip animations
 
 ### 🔒 Focus Features
 
@@ -50,18 +57,18 @@ todopomo/
 ├── css/
 │   └── style.css          # Styling
 ├── js/
-│   ├── main.js            # Application entry point & PWA setup
-│   ├── service-worker.js  # PWA service worker for offline support
+│   ├── main.js            # Application entry point & PWA setup (359 lines)
+│   ├── service-worker.js  # PWA service worker for offline support (207 lines)
 │   └── modules/           # Modular JavaScript architecture
-│       ├── config.js      # Configuration & constants (72 lines)
-│       ├── storage.js     # LocalStorage management (93 lines)
-│       ├── audio.js       # Background music control (83 lines)
-│       ├── timer.js       # Pomodoro timer logic (572 lines)
-│       ├── blocking.js    # Keyboard/mouse blocking (314 lines)
-│       ├── focus.js       # Cursor hiding & notifications (95 lines)
-│       ├── todos.js       # Todo list management (212 lines)
-│       ├── settings.js    # Settings panel (196 lines)
-│       └── ui.js          # UI utilities & dark mode (198 lines)
+│       ├── config.js      # Configuration & constants (65 lines)
+│       ├── storage.js     # LocalStorage management (83 lines)
+│       ├── audio.js       # Background music control (71 lines)
+│       ├── timer.js       # Pomodoro timer logic (540 lines)
+│       ├── blocking.js    # Keyboard/mouse blocking (301 lines)
+│       ├── focus.js       # Cursor hiding & notifications (89 lines)
+│       ├── todos.js       # Todo list management (233 lines)
+│       ├── settings.js    # Settings panel (210 lines)
+│       └── ui.js          # UI utilities & dark mode (217 lines)
 └── assets/
     ├── audio/
     │   └── focus.mp3      # Background focus music
@@ -93,16 +100,16 @@ timer.js
 
 ### Key Modules
 
-- **main.js** (265 lines) - Initializes all modules, PWA registration, 3-second install prompt
-- **timer.js** (572 lines) - Core Pomodoro functionality with GSAP animations
-- **blocking.js** (314 lines) - Prevents distractions (25+ blocked shortcuts, fullscreen lock)
-- **focus.js** (95 lines) - Cursor hiding and notification blocking
-- **storage.js** (93 lines) - Centralized data persistence (todos, settings, preferences)
-- **audio.js** (83 lines) - Background music with autoplay handling
-- **todos.js** (212 lines) - Todo CRUD operations
-- **settings.js** (196 lines) - Settings panel logic
-- **ui.js** (198 lines) - Dark mode, keyboard shortcuts, UI utilities
-- **config.js** (72 lines) - Constants and configuration
+- **main.js** (359 lines) - Initializes all modules, PWA registration, 3-second install prompt, GSAP page load animations
+- **timer.js** (540 lines) - Core Pomodoro functionality with GSAP animations and icon transitions
+- **blocking.js** (301 lines) - Prevents distractions (25+ blocked shortcuts, fullscreen lock)
+- **focus.js** (89 lines) - Cursor hiding and notification blocking
+- **storage.js** (83 lines) - Centralized data persistence (todos, settings, preferences)
+- **audio.js** (71 lines) - Background music with autoplay handling
+- **todos.js** (233 lines) - Todo CRUD operations with GSAP animations
+- **settings.js** (210 lines) - Settings panel logic
+- **ui.js** (217 lines) - Dark mode, keyboard shortcuts, UI utilities with animated icon transitions
+- **config.js** (65 lines) - Constants and configuration
 
 ### Architecture Benefits
 
@@ -159,16 +166,18 @@ timer.js
 4. Click play icon to start timer
 5. Click delete icon to remove
 
+**Note**: The page features smooth sequential animations on first load. Subsequent loads in the same session are instant for better performance.
+
 ### Pomodoro Timer
 
 1. Click play icon on any todo to start
 2. Timer enters fullscreen automatically
 3. **Controls**:
-   - Play/Pause: Toggle timer
+   - Play/Pause: Toggle timer (animated icon transition)
    - Edit: Click timer display to edit time
    - Stop: End current session
-   - Lock: Prevent accidental changes
-   - Sound: Toggle background music
+   - Lock: Prevent accidental changes (animated icon transition)
+   - Sound: Toggle background music (animated icon transition)
 
 ### Timer Editing
 
@@ -261,6 +270,13 @@ window.__todopomo.storage.getTodos();
 
 // Toggle music
 window.__todopomo.audioManager.toggle();
+
+// Force page load animation (for testing)
+sessionStorage.removeItem("hasAnimatedOnLoad");
+location.reload();
+
+// Check animation state
+window.__todopomo.todoManager.isInitialLoad;
 ```
 
 ## 🌐 Browser Support
@@ -278,7 +294,7 @@ window.__todopomo.audioManager.toggle();
 - **HTML5**: Semantic markup
 - **CSS3**: Neumorphic design, CSS variables, animations
 - **JavaScript (ES6+)**: Modules, classes, async/await
-- **GSAP**: Timer digit animations
+- **GSAP**: Professional animations throughout the app (page load, todos, timer, icons)
 - **LocalStorage**: Data persistence
 - **Fullscreen API**: Immersive timer mode
 - **Web Audio API**: Background music
@@ -339,4 +355,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ⭐ Star this repo if you find it helpful!
 
-Built with ❤️ for productivity enthusiasts</content>
+Built with ❤️ for productivity enthusiasts

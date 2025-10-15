@@ -49,19 +49,7 @@ body {
   display: grid;
   place-items: center;
   color: var(--text-color);
-  animation: fadeInBody 0.5s ease-out;
   transition: background 0.3s ease, color 0.3s ease;
-}
-
-@keyframes fadeInBody {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .logo-container {
@@ -127,7 +115,6 @@ body {
     inset -3px -3px 3px var(--shadow-dark),
     inset 3px 3px 3px var(--shadow-light);
   color: var(--text-color);
-  animation: fadeIn 0.5s ease-out;
   transition: box-shadow 0.2s ease-in-out, background 0.3s ease, color 0.3s ease;
 }
 
@@ -139,16 +126,7 @@ body {
 .todo-item.completed label {
   text-decoration: line-through;
   color: var(--text-light);
-  animation: strikethrough 0.5s ease-out forwards;
-}
-
-@keyframes strikethrough {
-  0% {
-    text-decoration-color: transparent;
-  }
-  100% {
-    text-decoration-color: var(--text-light);
-  }
+  transition: color 0.5s ease, text-decoration 0.5s ease;
 }
 
 .todo-item.completed .todo-actions {
@@ -381,17 +359,6 @@ input[type="number"] {
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Overlay */
 #timer-overlay {
   position: fixed;
@@ -405,17 +372,12 @@ input[type="number"] {
   justify-content: center;
   align-items: center;
   color: var(--white);
-  transform: scale(0.8);
   opacity: 0;
   visibility: hidden;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity 0.3s ease, visibility 0.3s;
   z-index: 1000;
 }
 
 #timer-overlay.visible {
-  transform: scale(1);
-  opacity: 1;
   visibility: visible;
 }
 
@@ -1003,37 +965,6 @@ input[type="number"] {
   60%,
   80% {
     transform: translate(-50%, -50%) translateX(2px);
-  }
-}
-
-@keyframes errorShakeSimple {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-10px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(10px);
-  }
-}
-
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
   }
 }
 

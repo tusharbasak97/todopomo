@@ -131,6 +131,22 @@ class TimerManager {
     this.isBreak = false;
 
     this.timerOverlay.classList.add("visible");
+
+    // GSAP animation for timer overlay show
+    gsap.fromTo(
+      this.timerOverlay,
+      {
+        scale: 0.8,
+        opacity: 0,
+      },
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 0.3,
+        ease: "back.out(1.7)",
+      }
+    );
+
     blockingManager.enterFullscreen();
     this.pauseResumeIcon.querySelector("img").src = "assets/svg/pause.svg";
     this.pauseResumeIcon.querySelector("img").alt = "Pause";
@@ -187,24 +203,37 @@ class TimerManager {
     if (this.isLocked) return;
 
     const img = this.pauseResumeIcon.querySelector("img");
-    img.style.opacity = 0;
 
-    setTimeout(() => {
-      if (this.isPaused) {
-        img.src = "assets/svg/pause.svg";
-        img.alt = "Pause";
-        this.isPaused = false;
-        this.startCountdown();
-        audioManager.play();
-      } else {
-        img.src = "assets/svg/play.svg";
-        img.alt = "Resume";
-        this.isPaused = true;
-        cancelAnimationFrame(this.timerRequest);
-        audioManager.pause();
-      }
-      img.style.opacity = 1;
-    }, 100);
+    // GSAP animation for icon change
+    gsap.to(img, {
+      scale: 0,
+      rotation: 180,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        if (this.isPaused) {
+          img.src = "assets/svg/pause.svg";
+          img.alt = "Pause";
+          this.isPaused = false;
+          this.startCountdown();
+          audioManager.play();
+        } else {
+          img.src = "assets/svg/play.svg";
+          img.alt = "Resume";
+          this.isPaused = true;
+          cancelAnimationFrame(this.timerRequest);
+          audioManager.pause();
+        }
+
+        // Animate back in
+        gsap.to(img, {
+          scale: 1,
+          rotation: 360,
+          duration: 0.2,
+          ease: "back.out(1.7)",
+        });
+      },
+    });
   }
 
   startCountdown() {
@@ -226,7 +255,17 @@ class TimerManager {
   }
 
   hide() {
-    this.timerOverlay.classList.remove("visible");
+    // GSAP animation for timer overlay hide
+    gsap.to(this.timerOverlay, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.in",
+      onComplete: () => {
+        this.timerOverlay.classList.remove("visible");
+      },
+    });
+
     blockingManager.exitFullscreen();
     this.timerTaskTitle.textContent = "";
     audioManager.stop();
@@ -449,7 +488,6 @@ class TimerManager {
     this.timerDisplay.style.fontSize = "clamp(1rem, 4vw, 2rem)";
     this.timerDisplay.style.fontWeight = "500";
     this.timerDisplay.style.textShadow = "0 2px 4px hsla(348, 100%, 61%, 0.3)";
-    this.timerDisplay.style.animation = "errorShakeSimple 0.5s ease-in-out";
     this.timerDisplay.style.whiteSpace = "normal";
     this.timerDisplay.style.wordWrap = "break-word";
     this.timerDisplay.style.maxWidth = "90vw";
@@ -457,6 +495,22 @@ class TimerManager {
     this.timerDisplay.style.lineHeight = "1.4";
     this.timerDisplay.style.minHeight = "auto";
     this.timerDisplay.style.maxHeight = "none";
+
+    // GSAP shake animation
+    gsap.fromTo(
+      this.timerDisplay,
+      { x: -10 },
+      {
+        x: 10,
+        duration: 0.1,
+        repeat: 5,
+        yoyo: true,
+        ease: "power1.inOut",
+        onComplete: () => {
+          gsap.set(this.timerDisplay, { x: 0 });
+        },
+      }
+    );
 
     setTimeout(() => {
       this.timerDisplay.innerHTML = `
