@@ -50,7 +50,7 @@ class TodoManager {
 
     // Create checkbox wrapper
     const checkboxWrapper = document.createElement("div");
-    checkboxWrapper.className = "checkbox-wrapper-24";
+    checkboxWrapper.className = "checkbox-wrapper";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";

@@ -400,6 +400,9 @@ class TimerManager {
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
     this.setTimerDigits(formattedTime);
 
+    // Show timer task title again when done editing
+    this.timerTaskTitle.style.display = "";
+
     this.pauseResumeIcon.style.pointerEvents = "";
     this.pauseResumeIcon.style.opacity = "";
     this.stopIcon.style.pointerEvents = "";
@@ -418,16 +421,19 @@ class TimerManager {
 
   validateTime(hours, minutes, seconds) {
     if (seconds >= 60) {
-      return { isValid: false, message: "⚠ Invalid seconds (0-59 only)" };
+      return { isValid: false, message: "⚠ Seconds: 0-59" };
     }
     if (minutes >= 60) {
-      return { isValid: false, message: "⚠ Invalid minutes (0-59 only)" };
+      return { isValid: false, message: "⚠ Minutes: 0-59" };
     }
     if (hours > 3) {
-      return { isValid: false, message: "⚠ Maximum 3 hours allowed" };
+      return { isValid: false, message: "⚠ Max 3 hours" };
+    }
+    if (hours === 3 && (minutes > 0 || seconds > 0)) {
+      return { isValid: false, message: "⚠ Max 03:00:00" };
     }
     if (hours === 0 && minutes === 0 && seconds === 0) {
-      return { isValid: false, message: "⚠ Please set a valid duration" };
+      return { isValid: false, message: "⚠ Set valid time" };
     }
     return { isValid: true };
   }
@@ -440,10 +446,17 @@ class TimerManager {
 
     this.timerDisplay.textContent = message;
     this.timerDisplay.style.color = "hsl(348, 100%, 61%)";
-    this.timerDisplay.style.fontSize = "1.2rem";
+    this.timerDisplay.style.fontSize = "clamp(1rem, 4vw, 2rem)";
     this.timerDisplay.style.fontWeight = "500";
     this.timerDisplay.style.textShadow = "0 2px 4px hsla(348, 100%, 61%, 0.3)";
-    this.timerDisplay.style.animation = "errorShake 0.5s ease-in-out";
+    this.timerDisplay.style.animation = "errorShakeSimple 0.5s ease-in-out";
+    this.timerDisplay.style.whiteSpace = "normal";
+    this.timerDisplay.style.wordWrap = "break-word";
+    this.timerDisplay.style.maxWidth = "90vw";
+    this.timerDisplay.style.textAlign = "center";
+    this.timerDisplay.style.lineHeight = "1.4";
+    this.timerDisplay.style.minHeight = "auto";
+    this.timerDisplay.style.maxHeight = "none";
 
     setTimeout(() => {
       this.timerDisplay.innerHTML = `
@@ -470,6 +483,13 @@ class TimerManager {
       this.timerDisplay.style.fontWeight = "";
       this.timerDisplay.style.textShadow = "";
       this.timerDisplay.style.animation = "";
+      this.timerDisplay.style.whiteSpace = "";
+      this.timerDisplay.style.wordWrap = "";
+      this.timerDisplay.style.maxWidth = "";
+      this.timerDisplay.style.textAlign = "";
+      this.timerDisplay.style.lineHeight = "";
+      this.timerDisplay.style.minHeight = "";
+      this.timerDisplay.style.maxHeight = "";
 
       const newDigitSpans = this.timerDisplay.querySelectorAll(
         ".timer-digit, .timer-separator"
@@ -495,6 +515,9 @@ class TimerManager {
       this.pauseResumeIcon.querySelector("img").alt = "Resume";
       audioManager.pause();
     }
+
+    // Hide timer task title when editing
+    this.timerTaskTitle.style.display = "none";
 
     this.pauseResumeIcon.style.pointerEvents = "none";
     this.pauseResumeIcon.style.opacity = "0.3";
