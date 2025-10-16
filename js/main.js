@@ -132,8 +132,16 @@ class App {
     // Check if this is the first visit using sessionStorage
     const hasAnimated = sessionStorage.getItem("hasAnimatedOnLoad");
 
-    if (hasAnimated === "true") {
-      // Not first load - make everything visible immediately
+    // Detect mobile devices for performance optimization
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      ) ||
+      window.innerWidth <= 768 ||
+      "ontouchstart" in window;
+
+    if (hasAnimated === "true" || isMobile) {
+      // Not first load OR mobile device - make everything visible immediately
       todoManager.isInitialLoad = false;
       return;
     }
@@ -161,37 +169,28 @@ class App {
 
     // Fallback function to make everything visible without animations
     const fallbackToVisible = () => {
-      // Make all elements visible
-      allElements.forEach((selector) => {
-        const element = document.querySelector(selector);
-        if (element) {
-          element.style.opacity = "1";
-        }
-      });
-
-      // Make todo items visible
-      todoItems.forEach((item) => {
-        item.style.opacity = "1";
-        item.style.transform = "none";
-      });
-
-      // Set todo list to auto height
-      if (todoList) {
-        todoList.style.height = "auto";
-        todoList.style.overflow = "";
-      }
-
-      // Enable individual animations for new todos
-      todoManager.isInitialLoad = false;
+      this.fallbackToVisible(allElements, todoList, todoItems);
     };
 
     // Check if GSAP is available
     if (typeof gsap === "undefined" && typeof window.gsap === "undefined") {
-      fallbackToVisible();
+      // Wait for GSAP to load asynchronously
+      this.waitForGSAP()
+        .then(() => {
+          this.runAnimations(allElements, todoList, todoItems);
+        })
+        .catch(() => {
+          fallbackToVisible();
+        });
       return;
     }
 
-    // Wrap GSAP animation logic in try/catch
+    // GSAP is already available
+    this.runAnimations(allElements, todoList, todoItems);
+  }
+
+  // Extract animation logic into separate method
+  runAnimations(allElements, todoList, todoItems) {
     try {
       // Set all elements to hidden initially
       allElements.forEach((selector) => {
@@ -217,72 +216,148 @@ class App {
       // Create timeline for animations
       const tl = gsap.timeline();
 
-      // Step 1: Fade in all elements simultaneously (slower fade)
+      // Step 1: Fade in all elements simultaneously (faster for better TTI)
       tl.to(allElements, {
         opacity: 1,
-        duration: 1.2,
+        duration: 0.6, // Reduced from 1.2s
         ease: "power2.out",
         stagger: 0,
       });
 
-      // Step 2: After fade-in, expand container and slide in todo items
+      // Step 2: Use requestIdleCallback for complex animations to not block TTI
       if (todoItems.length > 0 && todoList) {
-        // Calculate cumulative heights for container expansion
-        let cumulativeHeight = 0;
-
-        todoItems.forEach((item, index) => {
-          // Calculate the height this item will add
-          const itemHeight = item.scrollHeight + 15; // item height + margin
-          cumulativeHeight += itemHeight;
-
-          // Animate the container height to accommodate this item
-          tl.to(
-            todoList,
-            {
-              height: cumulativeHeight,
-              duration: 0.5,
-              ease: "power2.out",
+        // Use requestIdleCallback for non-critical animations
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(
+            () => {
+              this.animateTodoItems(todoList, todoItems, tl);
             },
-            index === 0 ? "+=0.3" : "-=0.3"
-          );
-
-          // Simultaneously animate the item sliding in from top
-          tl.to(
-            item,
-            {
-              opacity: 1,
-              y: 0,
-              scaleY: 1,
-              duration: 0.5,
-              ease: "power2.out",
-            },
-            "-=0.5"
-          );
-        });
-
-        // After all animations complete, set container to auto height
-        tl.add(() => {
-          if (todoList) {
-            todoList.style.height = "auto";
-            todoList.style.overflow = "";
-          }
-          // Allow individual animations for newly added todos
-          todoManager.isInitialLoad = false;
-        });
+            { timeout: 2000 }
+          ); // Fallback after 2 seconds
+        } else {
+          // Fallback for browsers without requestIdleCallback
+          setTimeout(() => {
+            this.animateTodoItems(todoList, todoItems, tl);
+          }, 100);
+        }
       } else {
-        // No todos, just enable individual animations
-        tl.add(() => {
+        // No todos, just enable individual animations after a short delay
+        setTimeout(() => {
           if (todoList) {
             todoList.style.height = "auto";
             todoList.style.overflow = "";
           }
           todoManager.isInitialLoad = false;
-        }, "+=0.3");
+        }, 100);
       }
     } catch (error) {
       // Fallback to visible state on animation error
-      fallbackToVisible();
+      this.fallbackToVisible(allElements, todoList, todoItems);
     }
+  }
+
+  // Fallback method to make everything visible
+  fallbackToVisible(allElements, todoList, todoItems) {
+    // Make all elements visible
+    allElements.forEach((selector) => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.opacity = "1";
+      }
+    });
+
+    // Make todo items visible
+    todoItems.forEach((item) => {
+      item.style.opacity = "1";
+      item.style.transform = "none";
+    });
+
+    // Set todo list to auto height
+    if (todoList) {
+      todoList.style.height = "auto";
+      todoList.style.overflow = "";
+    }
+
+    // Enable individual animations for new todos
+    todoManager.isInitialLoad = false;
+  }
+
+  // Separate method for todo item animations to use with requestIdleCallback
+  animateTodoItems(todoList, todoItems, tl) {
+    try {
+      // Calculate cumulative heights for container expansion
+      let cumulativeHeight = 0;
+
+      todoItems.forEach((item, index) => {
+        // Calculate the height this item will add
+        const itemHeight = item.scrollHeight + 15; // item height + margin
+        cumulativeHeight += itemHeight;
+
+        // Animate the container height to accommodate this item
+        tl.to(
+          todoList,
+          {
+            height: cumulativeHeight,
+            duration: 0.3, // Faster animation
+            ease: "power2.out",
+          },
+          index === 0 ? "+=0.1" : "-=0.2"
+        );
+
+        // Simultaneously animate the item sliding in from top
+        tl.to(
+          item,
+          {
+            opacity: 1,
+            y: 0,
+            scaleY: 1,
+            duration: 0.3, // Faster animation
+            ease: "power2.out",
+          },
+          "-=0.3"
+        );
+      });
+
+      // After all animations complete, set container to auto height
+      tl.add(() => {
+        if (todoList) {
+          todoList.style.height = "auto";
+          todoList.style.overflow = "";
+        }
+        // Allow individual animations for newly added todos
+        todoManager.isInitialLoad = false;
+      });
+    } catch (error) {
+      // Fallback on error
+      todoItems.forEach((item) => {
+        item.style.opacity = "1";
+        item.style.transform = "none";
+      });
+      if (todoList) {
+        todoList.style.height = "auto";
+        todoList.style.overflow = "";
+      }
+      todoManager.isInitialLoad = false;
+    }
+  }
+
+  // Wait for GSAP to be available before animations
+  waitForGSAP() {
+    return new Promise((resolve) => {
+      if (typeof gsap !== "undefined") {
+        resolve();
+        return;
+      }
+
+      const checkGSAP = () => {
+        if (typeof gsap !== "undefined") {
+          resolve();
+        } else {
+          setTimeout(checkGSAP, 10);
+        }
+      };
+      checkGSAP();
+    });
   }
 
   showFatalError(error) {
