@@ -16,12 +16,25 @@ class AudioManager {
   init() {
     if (this.backgroundMusic) {
       this.backgroundMusic.volume = CONFIG.AUDIO.DEFAULT_VOLUME;
+      // Lazy load audio only when needed
+      this.audioLoaded = false;
+    }
+  }
+
+  // Lazy load audio when first needed
+  loadAudio() {
+    if (!this.audioLoaded && this.backgroundMusic) {
+      this.backgroundMusic.load();
+      this.audioLoaded = true;
     }
   }
 
   play(reset = false) {
     if (this.isMusicEnabled && this.backgroundMusic) {
       try {
+        // Load audio only when first played
+        this.loadAudio();
+
         if (reset) {
           this.backgroundMusic.currentTime = 0;
         }

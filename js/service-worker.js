@@ -11,8 +11,8 @@ const CACHE_NAME = `todopomo-${CACHE_VERSION}`;
 const CACHE_EXPIRY = 365 * 24 * 60 * 60 * 1000; // 1 year in milliseconds
 
 // Determine base path based on environment
-const isGitHubPages = self.location.hostname === 'tusharbasak97.github.io';
-const basePath = isGitHubPages ? '/todopomo' : '';
+const isGitHubPages = self.location.hostname === "tusharbasak97.github.io";
+const basePath = isGitHubPages ? "/todopomo" : "";
 
 const ASSETS_TO_CACHE = [
   `${basePath}/`,
@@ -30,6 +30,7 @@ const ASSETS_TO_CACHE = [
   `${basePath}/js/modules/settings.js`,
   `${basePath}/js/modules/ui.js`,
   `${basePath}/assets/audio/focus.mp3`, // Cache audio file for offline
+  `${basePath}/js/modules/confetti.js`,
   `${basePath}/assets/images/favicon-16x16.png`,
   `${basePath}/assets/images/favicon-32x32.png`,
   `${basePath}/assets/images/favicon-48x48.png`,
@@ -52,7 +53,7 @@ const ASSETS_TO_CACHE = [
   `${basePath}/assets/svg/save.svg`,
   `${basePath}/assets/svg/settings.svg`,
   `${basePath}/favicon.ico`,
-  "https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js", // Cache GSAP for offline
+  "https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js", // Cache GSAP for offline
 ];
 
 // Install event - cache all assets with timestamp

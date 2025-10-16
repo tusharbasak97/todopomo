@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
 :root {
   --font-family: "Poppins", sans-serif;
@@ -167,7 +167,6 @@ body {
 /* Focus styles for accessibility */
 #new-todo:focus {
   outline: none;
-  
 }
 
 #new-todo::placeholder {
@@ -202,7 +201,6 @@ input[type="number"] {
 /* Focus styles for accessibility */
 #add-button:focus {
   outline: none;
-  
 }
 
 #add-button:hover {
@@ -459,7 +457,6 @@ input[type="number"] {
 /* Focus styles for accessibility */
 .timer-control-icon:focus {
   outline: none;
-  
 }
 
 .timer-control-icon:hover {
@@ -541,7 +538,7 @@ input[type="number"] {
 /* Accessibility styles for lock toggle */
 .timer-lock-toggle:focus {
   outline: 2px solid var(--white);
-  
+
   border-radius: 4px;
 }
 
@@ -635,7 +632,6 @@ input[type="number"] {
 /* Focus styles for accessibility */
 .dark-mode-toggle-wrapper .switch:focus {
   outline: none;
-  
 }
 
 .dark-mode-toggle-wrapper .switch:hover {
@@ -914,7 +910,6 @@ input[type="number"] {
 
 .settings-group input:focus {
   outline: none;
-  
 }
 
 .settings-group input:invalid {
