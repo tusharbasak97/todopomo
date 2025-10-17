@@ -33,9 +33,8 @@ var Confetti = {
     n.style.width = 4 + "px";
     n.style.height = 6 + "px";
     n.style.position = "absolute";
-    n.style.left = 0;
-    n.style.right = 0;
-    n.style.margin = "0 auto";
+    n.style.left = "10px";
+    n.style.top = "5px";
     n.style.opacity = 0;
     n.style.pointerEvents = "none";
     n.style.backgroundColor = this.colors[ran(0, 14)];
@@ -49,6 +48,19 @@ var Confetti = {
     var x = 0;
     var y = 0;
     var opacity = 0;
+    var count = 0;
+
+    // Smaller, tighter spread around checkbox - responsive to screen size
+    var xfactor;
+    var yfactor = ran(8, 80) * (1 + s / 10); // Reduced vertical spread
+
+    // Randomly choose left or right direction with smaller spread
+    if (ran(0, 2) === 1) {
+      xfactor = ran(3, 20) * (1 + s / 10); // Reduced horizontal spread
+    } else {
+      xfactor = ran(-3, -20) * (1 + s / 10); // Reduced horizontal spread
+    }
+
     var start = null;
     el.appendChild(c);
     var animate = function (timestamp) {
@@ -122,15 +134,18 @@ var Confetti = {
     var y = 0;
     var opacity = 0;
     var count = 0;
+
+    // Smaller, tighter spread around checkbox - responsive to screen size
     var xfactor;
-    var yfactor = ran(10, 40) * (1 + s / 10);
-    if (ran(0, 1) === 1) {
-      xfactor = ran(5, 40) * (1 + s / 10);
-      c.style.left = "-200px"; // Start from 200px left
+    var yfactor = ran(8, 20) * (1 + s / 10); // Reduced vertical spread
+
+    // Randomly choose left or right direction with smaller spread
+    if (ran(0, 2) === 1) {
+      xfactor = ran(3, 20) * (1 + s / 10); // Reduced horizontal spread
     } else {
-      xfactor = ran(-5, -40) * (1 + s / 10);
-      c.style.left = "-140px"; // Start from 140px right
+      xfactor = ran(-3, -20) * (1 + s / 10); // Reduced horizontal spread
     }
+
     var start = null;
     el.appendChild(c);
     var animate = function (timestamp) {

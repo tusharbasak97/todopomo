@@ -60,19 +60,19 @@ todopomo/
 ├── css/
 │   └── style.css          # Styling
 ├── js/
-│   ├── main.js            # Application entry point & PWA setup (359 lines)
-│   ├── service-worker.js  # PWA service worker for offline support (207 lines)
+│   ├── main.js            # Application entry point & PWA setup (454 lines)
+│   ├── service-worker.js  # PWA service worker for offline support (208 lines)
 │   └── modules/           # Modular JavaScript architecture
 │       ├── config.js      # Configuration & constants (65 lines)
 │       ├── storage.js     # LocalStorage management (83 lines)
-│       ├── audio.js       # Background music control (71 lines)
-│       ├── timer.js       # Pomodoro timer logic (540 lines)
+│       ├── audio.js       # Background music control (82 lines)
+│       ├── timer.js       # Pomodoro timer logic (571 lines)
 │       ├── blocking.js    # Keyboard/mouse blocking (301 lines)
 │       ├── focus.js       # Cursor hiding & notifications (89 lines)
-│       ├── todos.js       # Todo list management (233 lines)
+│       ├── todos.js       # Todo list management (231 lines)
 │       ├── settings.js    # Settings panel (210 lines)
-│       ├── ui.js          # UI utilities & dark mode (217 lines)
-│       └── confetti.js    # Confetti animation on task completion (184 lines)
+│       ├── ui.js          # UI utilities & dark mode (216 lines)
+│       └── confetti.js    # Confetti animation on task completion (189 lines)
 └── assets/
     ├── audio/
     │   └── focus.mp3      # Background focus music
@@ -107,21 +107,21 @@ todos.js
 
 ### Key Modules
 
-- **main.js** (359 lines) - Initializes all modules, PWA registration, 3-second install prompt, GSAP page load animations
-- **timer.js** (540 lines) - Core Pomodoro functionality with GSAP animations and icon transitions
+- **main.js** (454 lines) - Initializes all modules, PWA registration, 3-second install prompt, GSAP page load animations
+- **timer.js** (571 lines) - Core Pomodoro functionality with GSAP animations and icon transitions
 - **blocking.js** (301 lines) - Prevents distractions (25+ blocked shortcuts, fullscreen lock)
 - **focus.js** (89 lines) - Cursor hiding and notification blocking
 - **storage.js** (83 lines) - Centralized data persistence (todos, settings, preferences)
-- **audio.js** (71 lines) - Background music with autoplay handling
-- **todos.js** (233 lines) - Todo CRUD operations with GSAP animations and confetti celebrations
-- **confetti.js** (184 lines) - Vibrant confetti animation with 15 unique colors on task completion
+- **audio.js** (82 lines) - Background music with autoplay handling
+- **todos.js** (231 lines) - Todo CRUD operations with GSAP animations and confetti celebrations
+- **confetti.js** (189 lines) - Vibrant confetti animation with 15 unique colors on task completion
 - **settings.js** (210 lines) - Settings panel logic
-- **ui.js** (217 lines) - Dark mode, keyboard shortcuts, UI utilities with animated icon transitions
+- **ui.js** (216 lines) - Dark mode, keyboard shortcuts, UI utilities with animated icon transitions
 - **config.js** (65 lines) - Constants and configuration
 
 ### Architecture Benefits
 
-- ✅ **Maintainable**: Small, focused files (72-572 lines each)
+- ✅ **Maintainable**: Small, focused files (65-571 lines each)
 - ✅ **Testable**: Modules can be tested independently
 - ✅ **Scalable**: Easy to add features without touching existing code
 - ✅ **No Circular Dependencies**: Clean dependency tree with callback pattern
@@ -135,34 +135,6 @@ todos.js
 - 💾 **Smart Caching**: 44 assets cached (CSS, JS, images, audio, GSAP)
 - ⚡ **Performance**: Audio never re-downloads (0 KB on reload)
 - 🚀 **Fast Load**: Cache-first strategy for instant loading
-
-## 🚀 Installation
-
-### Basic Setup
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/tusharbasak97/todopomo.git
-   cd todopomo
-   ```
-
-2. Serve with any HTTP server:
-
-   ```bash
-   # Python
-   python -m http.server 8000
-
-   # Node.js
-   npx http-server
-
-   # PHP
-   php -S localhost:8000
-   ```
-
-3. Open `http://localhost:8000` in your browser
-
-**Note:** Must be served via HTTP server (not `file://`) for ES6 modules to work.
 
 ## 📖 Usage
 
@@ -225,70 +197,6 @@ todos.js
 - Clears all data (todos, settings, preferences)
 - Requires 2-second animation confirmation
 
-## 🛠️ Development
-
-### Project Structure
-
-```
-todopomo/
-├── index.html           # Main HTML file
-├── css/
-│   └── style.css       # Neumorphic styles
-├── js/
-│   ├── main.js         # Entry point
-│   └── modules/        # Modular JavaScript
-├── assets/
-│   ├── audio/          # Background music
-│   ├── images/         # Favicons
-│   └── svg/            # UI icons
-└── README.md
-```
-
-### Adding Features
-
-**Example: Adding a new module**
-
-```javascript
-// js/modules/myFeature.js
-class MyFeatureManager {
-  init(elements) {
-    // Initialize
-  }
-}
-
-export const myFeatureManager = new MyFeatureManager();
-```
-
-```javascript
-// In main.js
-import { myFeatureManager } from "./modules/myFeature.js";
-myFeatureManager.init({
-  /* elements */
-});
-```
-
-### Debugging
-
-Access modules in browser console:
-
-```javascript
-// Check timer state
-window.__todopomo.timerManager.isTimerActive();
-
-// Get all todos
-window.__todopomo.storage.getTodos();
-
-// Toggle music
-window.__todopomo.audioManager.toggle();
-
-// Force page load animation (for testing)
-sessionStorage.removeItem("hasAnimatedOnLoad");
-location.reload();
-
-// Check animation state
-window.__todopomo.todoManager.isInitialLoad;
-```
-
 ## 🌐 Browser Support
 
 - **Chrome/Edge**: ✅ Full support
@@ -334,16 +242,6 @@ The app blocks 25+ distraction shortcuts including:
 - Ctrl+R, Ctrl+P (refresh, print)
 - Alt+F4, Alt+Tab (system shortcuts)
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature-name`
-3. Follow the modular architecture pattern
-4. Test thoroughly (all features, keyboard shortcuts, persistence)
-5. Commit changes: `git commit -m 'Add feature'`
-6. Push to branch: `git push origin feature-name`
-7. Submit pull request
-
 ### Code Style
 
 - Use ES6 modules (import/export)
@@ -364,6 +262,10 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
+<div align="center">
+
 ⭐ Star this repo if you find it helpful!
 
 Built with ❤️ for productivity enthusiasts
+
+</div>
